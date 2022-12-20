@@ -77,11 +77,11 @@ func NewCompiler(
 	// symbol table
 	if symbolTable == nil {
 		symbolTable = NewSymbolTable()
-	}
 
-	// add builtin functions to the symbol table
-	for idx, fn := range builtinFuncs {
-		symbolTable.DefineBuiltin(idx, fn.Name)
+		// add builtin functions to the symbol table
+		for idx, fn := range builtinFuncs {
+			symbolTable.DefineBuiltin(idx, fn.Name)
+		}
 	}
 
 	// builtin modules
@@ -631,8 +631,8 @@ func (c *Compiler) SetImportDir(dir string) {
 //
 // Use this method if you want other source file extension than ".tengo".
 //
-//     // this will search for *.tengo, *.foo, *.bar
-//     err := c.SetImportFileExt(".tengo", ".foo", ".bar")
+//	// this will search for *.tengo, *.foo, *.bar
+//	err := c.SetImportFileExt(".tengo", ".foo", ".bar")
 //
 // This function requires at least one argument, since it will replace the
 // current list of extension name.
