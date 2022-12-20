@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 import (
 	"bytes"
@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/token"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/token"
 )
 
 var (

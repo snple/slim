@@ -4,25 +4,25 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-func makeOSProcessState(state *os.ProcessState) *tengo.ImmutableMap {
-	return &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"exited": &tengo.UserFunction{
+func makeOSProcessState(state *os.ProcessState) *slim.ImmutableMap {
+	return &slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"exited": &slim.UserFunction{
 				Name:  "exited",
 				Value: FuncARB(state.Exited),
 			},
-			"pid": &tengo.UserFunction{
+			"pid": &slim.UserFunction{
 				Name:  "pid",
 				Value: FuncARI(state.Pid),
 			},
-			"string": &tengo.UserFunction{
+			"string": &slim.UserFunction{
 				Name:  "string",
 				Value: FuncARS(state.String),
 			},
-			"success": &tengo.UserFunction{
+			"success": &slim.UserFunction{
 				Name:  "success",
 				Value: FuncARB(state.Success),
 			},
@@ -30,26 +30,26 @@ func makeOSProcessState(state *os.ProcessState) *tengo.ImmutableMap {
 	}
 }
 
-func makeOSProcess(proc *os.Process) *tengo.ImmutableMap {
-	return &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"kill": &tengo.UserFunction{
+func makeOSProcess(proc *os.Process) *slim.ImmutableMap {
+	return &slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"kill": &slim.UserFunction{
 				Name:  "kill",
 				Value: FuncARE(proc.Kill),
 			},
-			"release": &tengo.UserFunction{
+			"release": &slim.UserFunction{
 				Name:  "release",
 				Value: FuncARE(proc.Release),
 			},
-			"signal": &tengo.UserFunction{
+			"signal": &slim.UserFunction{
 				Name: "signal",
-				Value: func(args ...tengo.Object) (tengo.Object, error) {
+				Value: func(args ...slim.Object) (slim.Object, error) {
 					if len(args) != 1 {
-						return nil, tengo.ErrWrongNumArguments
+						return nil, slim.ErrWrongNumArguments
 					}
-					i1, ok := tengo.ToInt64(args[0])
+					i1, ok := slim.ToInt64(args[0])
 					if !ok {
-						return nil, tengo.ErrInvalidArgumentType{
+						return nil, slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "int(compatible)",
 							Found:    args[0].TypeName(),
@@ -58,11 +58,11 @@ func makeOSProcess(proc *os.Process) *tengo.ImmutableMap {
 					return wrapError(proc.Signal(syscall.Signal(i1))), nil
 				},
 			},
-			"wait": &tengo.UserFunction{
+			"wait": &slim.UserFunction{
 				Name: "wait",
-				Value: func(args ...tengo.Object) (tengo.Object, error) {
+				Value: func(args ...slim.Object) (slim.Object, error) {
 					if len(args) != 0 {
-						return nil, tengo.ErrWrongNumArguments
+						return nil, slim.ErrWrongNumArguments
 					}
 					state, err := proc.Wait()
 					if err != nil {

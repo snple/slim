@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/d5/tengo/v2/parser"
+	"github.com/snple/slim/parser"
 )
 
 // Script can simplify compilation and execution of embedded scripts.

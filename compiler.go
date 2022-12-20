@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 import (
 	"errors"
@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/token"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/token"
 )
 
 // compilationScope represents a compiled instructions and the last two
@@ -513,7 +513,7 @@ func (c *Compiler) Compile(node parser.Node) error {
 			}
 
 			switch v := v.(type) {
-			case []byte: // module written in Tengo
+			case []byte: // module written in slim
 				compiled, err := c.compileModule(node,
 					node.ModuleName, v, false)
 				if err != nil {
@@ -629,10 +629,10 @@ func (c *Compiler) SetImportDir(dir string) {
 // SetImportFileExt sets the extension name of the source file for loading
 // local module files.
 //
-// Use this method if you want other source file extension than ".tengo".
+// Use this method if you want other source file extension than ".slim".
 //
-//	// this will search for *.tengo, *.foo, *.bar
-//	err := c.SetImportFileExt(".tengo", ".foo", ".bar")
+//	// this will search for *.slim, *.foo, *.bar
+//	err := c.SetImportFileExt(".slim", ".foo", ".bar")
 //
 // This function requires at least one argument, since it will replace the
 // current list of extension name.

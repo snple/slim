@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 // Iterator represents an iterator for underlying data type.
 type Iterator interface {

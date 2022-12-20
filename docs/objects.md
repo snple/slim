@@ -2,15 +2,15 @@
 
 ## Table of Contents
 
-- [Tengo Objects](#tengo-objects)
+- [slim Objects](#slim-objects)
 - [Runtime Object Types](#runtime-object-types)
 - [User Object Types](#user-object-types)
 
-## Tengo Objects
+## slim Objects
 
-In Tengo, all object types _(both [runtime types](#runtime-object-types) and
+In slim, all object types _(both [runtime types](#runtime-object-types) and
 [user types](#user-object-types))_ must implement
-[Object](https://godoc.org/github.com/d5/tengo#Object) interface.
+[Object](https://godoc.org/github.com/snple/slim#Object) interface.
 
 ### Object Interface
 
@@ -34,12 +34,12 @@ the value is required, most commonly when being converted into String value.
 BinaryOp(op token.Token, rhs Object) (res Object, err error)
 ```
 
-In Tengo, a type can overload binary operators
+In slim, a type can overload binary operators
 (`+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `&^`, `>>`, `<<`, `>`, `>=`; _note
 that `<` and `<=` operators are not overloadable as they're simply implemented
 by switching left-hand side and right-hand side of `>`/`>=` operator_) by
 implementing BinaryOp method. BinaryOp method takes the operator `op` and the
-right-hand side object `rhs`, and, should return a resulting value `res`. 
+right-hand side object `rhs`, and, should return a resulting value `res`.
 
 **Error value vs runtime error**
 
@@ -60,7 +60,7 @@ IsFalsy() bool
 ```
 
 IsFalsy method should return true if the underlying value is considered to be
-[falsy](https://github.com/d5/tengo/blob/master/docs/runtime-types.md#objectisfalsy).
+[falsy](https://github.com/snple/slim/blob/master/docs/runtime-types.md#objectisfalsy).
 
 ```golang
 Equals(o Object) bool
@@ -157,7 +157,7 @@ Iterate() Iterator
 ```
 
 The Iterate method should return another object that implements
-[Iterator](https://godoc.org/github.com/d5/tengo#Iterator) interface.
+[Iterator](https://godoc.org/github.com/snple/slim#Iterator) interface.
 
 ### Iterator Interface
 
@@ -191,50 +191,50 @@ again.
 
 ## Runtime Object Types
 
-These are the basic types Tengo runtime supports out of the box:
+These are the basic types slim runtime supports out of the box:
 
-- Primitive value types: [Int](https://godoc.org/github.com/d5/tengo#Int),
-  [String](https://godoc.org/github.com/d5/tengo#String),
-  [Float](https://godoc.org/github.com/d5/tengo#Float),
-  [Bool](https://godoc.org/github.com/d5/tengo#ArrayIterator),
-  [Char](https://godoc.org/github.com/d5/tengo#Char),
-  [Bytes](https://godoc.org/github.com/d5/tengo#Bytes),
-  [Time](https://godoc.org/github.com/d5/tengo#Time)
-- Composite value types: [Array](https://godoc.org/github.com/d5/tengo#Array),
-  [ImmutableArray](https://godoc.org/github.com/d5/tengo#ImmutableArray),
-  [Map](https://godoc.org/github.com/d5/tengo#Map),
-  [ImmutableMap](https://godoc.org/github.com/d5/tengo#ImmutableMap)
+- Primitive value types: [Int](https://godoc.org/github.com/snple/slim#Int),
+  [String](https://godoc.org/github.com/snple/slim#String),
+  [Float](https://godoc.org/github.com/snple/slim#Float),
+  [Bool](https://godoc.org/github.com/snple/slim#ArrayIterator),
+  [Char](https://godoc.org/github.com/snple/slim#Char),
+  [Bytes](https://godoc.org/github.com/snple/slim#Bytes),
+  [Time](https://godoc.org/github.com/snple/slim#Time)
+- Composite value types: [Array](https://godoc.org/github.com/snple/slim#Array),
+  [ImmutableArray](https://godoc.org/github.com/snple/slim#ImmutableArray),
+  [Map](https://godoc.org/github.com/snple/slim#Map),
+  [ImmutableMap](https://godoc.org/github.com/snple/slim#ImmutableMap)
 - Functions:
-  [CompiledFunction](https://godoc.org/github.com/d5/tengo#CompiledFunction),
-  [BuiltinFunction](https://godoc.org/github.com/d5/tengo#BuiltinFunction),
-  [UserFunction](https://godoc.org/github.com/d5/tengo#UserFunction)
-- [Iterators](https://godoc.org/github.com/d5/tengo#Iterator):
-  [StringIterator](https://godoc.org/github.com/d5/tengo#StringIterator),
-  [ArrayIterator](https://godoc.org/github.com/d5/tengo#ArrayIterator),
-  [MapIterator](https://godoc.org/github.com/d5/tengo#MapIterator),
-  [ImmutableMapIterator](https://godoc.org/github.com/d5/tengo#ImmutableMapIterator)
-- [Error](https://godoc.org/github.com/d5/tengo#Error)
-- [Undefined](https://godoc.org/github.com/d5/tengo#Undefined)
-- Other internal objects: [Break](https://godoc.org/github.com/d5/tengo#Break),
-  [Continue](https://godoc.org/github.com/d5/tengo#Continue),
-  [ReturnValue](https://godoc.org/github.com/d5/tengo#ReturnValue)
+  [CompiledFunction](https://godoc.org/github.com/snple/slim#CompiledFunction),
+  [BuiltinFunction](https://godoc.org/github.com/snple/slim#BuiltinFunction),
+  [UserFunction](https://godoc.org/github.com/snple/slim#UserFunction)
+- [Iterators](https://godoc.org/github.com/snple/slim#Iterator):
+  [StringIterator](https://godoc.org/github.com/snple/slim#StringIterator),
+  [ArrayIterator](https://godoc.org/github.com/snple/slim#ArrayIterator),
+  [MapIterator](https://godoc.org/github.com/snple/slim#MapIterator),
+  [ImmutableMapIterator](https://godoc.org/github.com/snple/slim#ImmutableMapIterator)
+- [Error](https://godoc.org/github.com/snple/slim#Error)
+- [Undefined](https://godoc.org/github.com/snple/slim#Undefined)
+- Other internal objects: [Break](https://godoc.org/github.com/snple/slim#Break),
+  [Continue](https://godoc.org/github.com/snple/slim#Continue),
+  [ReturnValue](https://godoc.org/github.com/snple/slim#ReturnValue)
 
 See
-[Runtime Types](https://github.com/d5/tengo/blob/master/docs/runtime-types.md)
+[Runtime Types](https://github.com/snple/slim/blob/master/docs/runtime-types.md)
 for more details on these runtime types.
 
 ## User Object Types
 
 Users can easily extend and add their own types by implementing the same
-[Object](https://godoc.org/github.com/d5/tengo#Object) interface and the
-default `ObjectImpl` implementation. Tengo runtime will treat them in the
+[Object](https://godoc.org/github.com/snple/slim#Object) interface and the
+default `ObjectImpl` implementation. slim runtime will treat them in the
 same way as its runtime types with no performance overhead.
 
 Here's an example user type implementation, `StringArray`:
 
 ```golang
 type StringArray struct {
-    tengo.ObjectImpl
+    slim.ObjectImpl
     Value []string
 }
 
@@ -242,7 +242,7 @@ func (o *StringArray) String() string {
     return strings.Join(o.Value, ", ")
 }
 
-func (o *StringArray) BinaryOp(op token.Token, rhs tengo.Object) (tengo.Object, error) {
+func (o *StringArray) BinaryOp(op token.Token, rhs slim.Object) (slim.Object, error) {
     if rhs, ok := rhs.(*StringArray); ok {
         switch op {
         case token.Add:
@@ -253,14 +253,14 @@ func (o *StringArray) BinaryOp(op token.Token, rhs tengo.Object) (tengo.Object, 
         }
     }
 
-    return nil, tengo.ErrInvalidOperator
+    return nil, slim.ErrInvalidOperator
 }
 
 func (o *StringArray) IsFalsy() bool {
     return len(o.Value) == 0
 }
 
-func (o *StringArray) Equals(x tengo.Object) bool {
+func (o *StringArray) Equals(x slim.Object) bool {
     if x, ok := x.(*StringArray); ok {
         if len(o.Value) != len(x.Value) {
             return false
@@ -278,7 +278,7 @@ func (o *StringArray) Equals(x tengo.Object) bool {
     return false
 }
 
-func (o *StringArray) Copy() tengo.Object {
+func (o *StringArray) Copy() slim.Object {
     return &StringArray{
         Value: append([]string{}, o.Value...),
     }
@@ -290,13 +290,13 @@ func (o *StringArray) TypeName() string {
 ```
 
 You can use a user type via either
-[Script.Add](https://godoc.org/github.com/d5/tengo#Script.Add) or by directly
+[Script.Add](https://godoc.org/github.com/snple/slim#Script.Add) or by directly
 manipulating the symbol table and the global variables. Here's an example code
 to add `StringArray` to the script:
 
 ```golang
 // script that uses 'my_list'
-s := tengo.NewScript([]byte(`
+s := slim.NewScript([]byte(`
     print(my_list + "three")
 `))
 
@@ -308,47 +308,47 @@ s.Run()                   // prints "one, two, three"
 It can also implement `IndexGet` and `IndexSet`:
 
 ```golang
-func (o *StringArray) IndexGet(index tengo.Object) (tengo.Object, error) {
-    intIdx, ok := index.(*tengo.Int)
+func (o *StringArray) IndexGet(index slim.Object) (slim.Object, error) {
+    intIdx, ok := index.(*slim.Int)
     if ok {
         if intIdx.Value >= 0 && intIdx.Value < int64(len(o.Value)) {
-            return &tengo.String{Value: o.Value[intIdx.Value]}, nil
+            return &slim.String{Value: o.Value[intIdx.Value]}, nil
         }
 
-        return nil, tengo.ErrIndexOutOfBounds
+        return nil, slim.ErrIndexOutOfBounds
     }
 
-    strIdx, ok := index.(*tengo.String)
+    strIdx, ok := index.(*slim.String)
     if ok {
         for vidx, str := range o.Value {
             if strIdx.Value == str {
-                return &tengo.Int{Value: int64(vidx)}, nil
+                return &slim.Int{Value: int64(vidx)}, nil
             }
         }
 
-        return tengo.UndefinedValue, nil
+        return slim.UndefinedValue, nil
     }
 
-    return nil, tengo.ErrInvalidIndexType
+    return nil, slim.ErrInvalidIndexType
 }
 
-func (o *StringArray) IndexSet(index, value tengo.Object) error {
-    strVal, ok := tengo.ToString(value)
+func (o *StringArray) IndexSet(index, value slim.Object) error {
+    strVal, ok := slim.ToString(value)
     if !ok {
-        return tengo.ErrInvalidIndexValueType
+        return slim.ErrInvalidIndexValueType
     }
 
-    intIdx, ok := index.(*tengo.Int)
+    intIdx, ok := index.(*slim.Int)
     if ok {
         if intIdx.Value >= 0 && intIdx.Value < int64(len(o.Value)) {
             o.Value[intIdx.Value] = strVal
             return nil
         }
 
-        return tengo.ErrIndexOutOfBounds
+        return slim.ErrIndexOutOfBounds
     }
 
-    return tengo.ErrInvalidIndexType
+    return slim.ErrInvalidIndexType
 }
 ```
 
@@ -359,14 +359,14 @@ func (o *StringArray) CanCall() bool {
     return true
 }
 
-func (o *StringArray) Call(args ...tengo.Object) (ret tengo.Object, err error) {
+func (o *StringArray) Call(args ...slim.Object) (ret slim.Object, err error) {
     if len(args) != 1 {
-        return nil, tengo.ErrWrongNumArguments
+        return nil, slim.ErrWrongNumArguments
     }
 
-    s1, ok := tengo.ToString(args[0])
+    s1, ok := slim.ToString(args[0])
     if !ok {
-        return nil, tengo.ErrInvalidArgumentType{
+        return nil, slim.ErrInvalidArgumentType{
             Name:     "first",
             Expected: "string",
             Found:    args[0].TypeName(),
@@ -375,18 +375,18 @@ func (o *StringArray) Call(args ...tengo.Object) (ret tengo.Object, err error) {
 
     for i, v := range o.Value {
         if v == s1 {
-            return &tengo.Int{Value: int64(i)}, nil
+            return &slim.Int{Value: int64(i)}, nil
         }
     }
 
-    return tengo.UndefinedValue, nil
+    return slim.UndefinedValue, nil
 }
 ```
 
 Then it can be "invoked":
 
 ```golang
-s := tengo.NewScript([]byte(`
+s := slim.NewScript([]byte(`
     print(my_list("two"))
 `))
 
@@ -402,14 +402,14 @@ func (o *StringArray) CanIterate() bool {
     return true
 }
 
-func (o *StringArray) Iterate() tengo.Iterator {
+func (o *StringArray) Iterate() slim.Iterator {
     return &StringArrayIterator{
         strArr: o,
     }
 }
 
 type StringArrayIterator struct {
-    tengo.ObjectImpl
+    slim.ObjectImpl
     strArr *StringArray
     idx    int
 }
@@ -423,12 +423,12 @@ func (i *StringArrayIterator) Next() bool {
     return i.idx <= len(i.strArr.Value)
 }
 
-func (i *StringArrayIterator) Key() tengo.Object {
-    return &tengo.Int{Value: int64(i.idx - 1)}
+func (i *StringArrayIterator) Key() slim.Object {
+    return &slim.Int{Value: int64(i.idx - 1)}
 }
 
-func (i *StringArrayIterator) Value() tengo.Object {
-    return &tengo.String{Value: i.strArr.Value[i.idx-1]}
+func (i *StringArrayIterator) Value() slim.Object {
+    return &slim.String{Value: i.strArr.Value[i.idx-1]}
 }
 ```
 

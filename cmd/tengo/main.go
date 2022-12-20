@@ -11,13 +11,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/stdlib"
+	"github.com/snple/slim"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/stdlib"
 )
 
 const (
-	sourceFileExt = ".tengo"
+	sourceFileExt = ".slim"
 	replPrompt    = ">> "
 )
 
@@ -96,7 +96,7 @@ func main() {
 // CompileOnly compiles the source code and writes the compiled binary into
 // outputFile.
 func CompileOnly(
-	modules *tengo.ModuleMap,
+	modules *slim.ModuleMap,
 	data []byte,
 	inputFile, outputFile string,
 ) (err error) {
@@ -131,7 +131,7 @@ func CompileOnly(
 
 // CompileAndRun compiles the source code and executes it.
 func CompileAndRun(
-	modules *tengo.ModuleMap,
+	modules *slim.ModuleMap,
 	data []byte,
 	inputFile string,
 ) (err error) {
@@ -140,45 +140,45 @@ func CompileAndRun(
 		return
 	}
 
-	machine := tengo.NewVM(bytecode, nil, -1)
+	machine := slim.NewVM(bytecode, nil, -1)
 	err = machine.Run()
 	return
 }
 
 // RunCompiled reads the compiled binary from file and executes it.
-func RunCompiled(modules *tengo.ModuleMap, data []byte) (err error) {
-	bytecode := &tengo.Bytecode{}
+func RunCompiled(modules *slim.ModuleMap, data []byte) (err error) {
+	bytecode := &slim.Bytecode{}
 	err = bytecode.Decode(bytes.NewReader(data), modules)
 	if err != nil {
 		return
 	}
 
-	machine := tengo.NewVM(bytecode, nil, -1)
+	machine := slim.NewVM(bytecode, nil, -1)
 	err = machine.Run()
 	return
 }
 
 // RunREPL starts REPL.
-func RunREPL(modules *tengo.ModuleMap, in io.Reader, out io.Writer) {
+func RunREPL(modules *slim.ModuleMap, in io.Reader, out io.Writer) {
 	stdin := bufio.NewScanner(in)
 	fileSet := parser.NewFileSet()
-	globals := make([]tengo.Object, tengo.GlobalsSize)
-	symbolTable := tengo.NewSymbolTable()
-	for idx, fn := range tengo.GetAllBuiltinFunctions() {
+	globals := make([]slim.Object, slim.GlobalsSize)
+	symbolTable := slim.NewSymbolTable()
+	for idx, fn := range slim.GetAllBuiltinFunctions() {
 		symbolTable.DefineBuiltin(idx, fn.Name)
 	}
 
 	// embed println function
 	symbol := symbolTable.Define("__repl_println__")
-	globals[symbol.Index] = &tengo.UserFunction{
+	globals[symbol.Index] = &slim.UserFunction{
 		Name: "println",
-		Value: func(args ...tengo.Object) (ret tengo.Object, err error) {
+		Value: func(args ...slim.Object) (ret slim.Object, err error) {
 			var printArgs []interface{}
 			for _, arg := range args {
-				if _, isUndefined := arg.(*tengo.Undefined); isUndefined {
+				if _, isUndefined := arg.(*slim.Undefined); isUndefined {
 					printArgs = append(printArgs, "<undefined>")
 				} else {
-					s, _ := tengo.ToString(arg)
+					s, _ := slim.ToString(arg)
 					printArgs = append(printArgs, s)
 				}
 			}
@@ -188,7 +188,7 @@ func RunREPL(modules *tengo.ModuleMap, in io.Reader, out io.Writer) {
 		},
 	}
 
-	var constants []tengo.Object
+	var constants []slim.Object
 	for {
 		_, _ = fmt.Fprint(out, replPrompt)
 		scanned := stdin.Scan()
@@ -206,14 +206,14 @@ func RunREPL(modules *tengo.ModuleMap, in io.Reader, out io.Writer) {
 		}
 
 		file = addPrints(file)
-		c := tengo.NewCompiler(srcFile, symbolTable, constants, modules, nil)
+		c := slim.NewCompiler(srcFile, symbolTable, constants, modules, nil)
 		if err := c.Compile(file); err != nil {
 			_, _ = fmt.Fprintln(out, err.Error())
 			continue
 		}
 
 		bytecode := c.Bytecode()
-		machine := tengo.NewVM(bytecode, globals, -1)
+		machine := slim.NewVM(bytecode, globals, -1)
 		if err := machine.Run(); err != nil {
 			_, _ = fmt.Fprintln(out, err.Error())
 			continue
@@ -223,10 +223,10 @@ func RunREPL(modules *tengo.ModuleMap, in io.Reader, out io.Writer) {
 }
 
 func compileSrc(
-	modules *tengo.ModuleMap,
+	modules *slim.ModuleMap,
 	src []byte,
 	inputFile string,
-) (*tengo.Bytecode, error) {
+) (*slim.Bytecode, error) {
 	fileSet := parser.NewFileSet()
 	srcFile := fileSet.AddFile(filepath.Base(inputFile), -1, len(src))
 
@@ -236,7 +236,7 @@ func compileSrc(
 		return nil, err
 	}
 
-	c := tengo.NewCompiler(srcFile, nil, nil, modules, nil)
+	c := slim.NewCompiler(srcFile, nil, nil, modules, nil)
 	c.EnableFileImport(true)
 	if resolvePath {
 		c.SetImportDir(filepath.Dir(inputFile))
@@ -254,7 +254,7 @@ func compileSrc(
 func doHelp() {
 	fmt.Println("Usage:")
 	fmt.Println()
-	fmt.Println("	tengo [flags] {input-file}")
+	fmt.Println("	slim [flags] {input-file}")
 	fmt.Println()
 	fmt.Println("Flags:")
 	fmt.Println()
@@ -263,20 +263,20 @@ func doHelp() {
 	fmt.Println()
 	fmt.Println("Examples:")
 	fmt.Println()
-	fmt.Println("	tengo")
+	fmt.Println("	slim")
 	fmt.Println()
-	fmt.Println("	          Start Tengo REPL")
+	fmt.Println("	          Start slim REPL")
 	fmt.Println()
-	fmt.Println("	tengo myapp.tengo")
+	fmt.Println("	slim myapp.slim")
 	fmt.Println()
-	fmt.Println("	          Compile and run source file (myapp.tengo)")
-	fmt.Println("	          Source file must have .tengo extension")
+	fmt.Println("	          Compile and run source file (myapp.slim)")
+	fmt.Println("	          Source file must have .slim extension")
 	fmt.Println()
-	fmt.Println("	tengo -o myapp myapp.tengo")
+	fmt.Println("	slim -o myapp myapp.slim")
 	fmt.Println()
-	fmt.Println("	          Compile source file (myapp.tengo) into bytecode file (myapp)")
+	fmt.Println("	          Compile source file (myapp.slim) into bytecode file (myapp)")
 	fmt.Println()
-	fmt.Println("	tengo myapp")
+	fmt.Println("	slim myapp")
 	fmt.Println()
 	fmt.Println("	          Run bytecode file (myapp)")
 	fmt.Println()

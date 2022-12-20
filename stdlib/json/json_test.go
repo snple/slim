@@ -4,9 +4,9 @@ import (
 	gojson "encoding/json"
 	"testing"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/require"
-	"github.com/d5/tengo/v2/stdlib/json"
+	"github.com/snple/slim"
+	"github.com/snple/slim/require"
+	"github.com/snple/slim/stdlib/json"
 )
 
 type ARR = []interface{}
@@ -31,7 +31,7 @@ func TestJSON(t *testing.T) {
 	testJSONEncodeDecode(t, "foo")
 	testJSONEncodeDecode(t, "foo bar")
 	testJSONEncodeDecode(t, "foo \"bar\"")
-	// See: https://github.com/d5/tengo/issues/268
+	// See: https://github.com/snple/slim/issues/268
 	testJSONEncodeDecode(t, "1\u001C04")
 	testJSONEncodeDecode(t, "çığöşü")
 	testJSONEncodeDecode(t, "ç1\u001C04IĞÖŞÜ")
@@ -89,7 +89,7 @@ func testDecodeError(t *testing.T, input string) {
 }
 
 func testJSONEncodeDecode(t *testing.T, v interface{}) {
-	o, err := tengo.FromInterface(v)
+	o, err := slim.FromInterface(v)
 	require.NoError(t, err)
 
 	b, err := json.Encode(o)
@@ -101,7 +101,7 @@ func testJSONEncodeDecode(t *testing.T, v interface{}) {
 	vj, err := gojson.Marshal(v)
 	require.NoError(t, err)
 
-	aj, err := gojson.Marshal(tengo.ToInterface(a))
+	aj, err := gojson.Marshal(slim.ToInterface(a))
 	require.NoError(t, err)
 
 	require.Equal(t, vj, aj)

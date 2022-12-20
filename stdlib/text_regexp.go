@@ -3,26 +3,26 @@ package stdlib
 import (
 	"regexp"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
-	return &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
+func makeTextRegexp(re *regexp.Regexp) *slim.ImmutableMap {
+	return &slim.ImmutableMap{
+		Value: map[string]slim.Object{
 			// match(text) => bool
-			"match": &tengo.UserFunction{
-				Value: func(args ...tengo.Object) (
-					ret tengo.Object,
+			"match": &slim.UserFunction{
+				Value: func(args ...slim.Object) (
+					ret slim.Object,
 					err error,
 				) {
 					if len(args) != 1 {
-						err = tengo.ErrWrongNumArguments
+						err = slim.ErrWrongNumArguments
 						return
 					}
 
-					s1, ok := tengo.ToString(args[0])
+					s1, ok := slim.ToString(args[0])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "string(compatible)",
 							Found:    args[0].TypeName(),
@@ -31,9 +31,9 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 					}
 
 					if re.MatchString(s1) {
-						ret = tengo.TrueValue
+						ret = slim.TrueValue
 					} else {
-						ret = tengo.FalseValue
+						ret = slim.FalseValue
 					}
 
 					return
@@ -42,20 +42,20 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 
 			// find(text) 			=> array(array({text:,begin:,end:}))/undefined
 			// find(text, maxCount) => array(array({text:,begin:,end:}))/undefined
-			"find": &tengo.UserFunction{
-				Value: func(args ...tengo.Object) (
-					ret tengo.Object,
+			"find": &slim.UserFunction{
+				Value: func(args ...slim.Object) (
+					ret slim.Object,
 					err error,
 				) {
 					numArgs := len(args)
 					if numArgs != 1 && numArgs != 2 {
-						err = tengo.ErrWrongNumArguments
+						err = slim.ErrWrongNumArguments
 						return
 					}
 
-					s1, ok := tengo.ToString(args[0])
+					s1, ok := slim.ToString(args[0])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "string(compatible)",
 							Found:    args[0].TypeName(),
@@ -66,35 +66,35 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 					if numArgs == 1 {
 						m := re.FindStringSubmatchIndex(s1)
 						if m == nil {
-							ret = tengo.UndefinedValue
+							ret = slim.UndefinedValue
 							return
 						}
 
-						arr := &tengo.Array{}
+						arr := &slim.Array{}
 						for i := 0; i < len(m); i += 2 {
 							arr.Value = append(arr.Value,
-								&tengo.ImmutableMap{
-									Value: map[string]tengo.Object{
-										"text": &tengo.String{
+								&slim.ImmutableMap{
+									Value: map[string]slim.Object{
+										"text": &slim.String{
 											Value: s1[m[i]:m[i+1]],
 										},
-										"begin": &tengo.Int{
+										"begin": &slim.Int{
 											Value: int64(m[i]),
 										},
-										"end": &tengo.Int{
+										"end": &slim.Int{
 											Value: int64(m[i+1]),
 										},
 									}})
 						}
 
-						ret = &tengo.Array{Value: []tengo.Object{arr}}
+						ret = &slim.Array{Value: []slim.Object{arr}}
 
 						return
 					}
 
-					i2, ok := tengo.ToInt(args[1])
+					i2, ok := slim.ToInt(args[1])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "second",
 							Expected: "int(compatible)",
 							Found:    args[1].TypeName(),
@@ -103,24 +103,24 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 					}
 					m := re.FindAllStringSubmatchIndex(s1, i2)
 					if m == nil {
-						ret = tengo.UndefinedValue
+						ret = slim.UndefinedValue
 						return
 					}
 
-					arr := &tengo.Array{}
+					arr := &slim.Array{}
 					for _, m := range m {
-						subMatch := &tengo.Array{}
+						subMatch := &slim.Array{}
 						for i := 0; i < len(m); i += 2 {
 							subMatch.Value = append(subMatch.Value,
-								&tengo.ImmutableMap{
-									Value: map[string]tengo.Object{
-										"text": &tengo.String{
+								&slim.ImmutableMap{
+									Value: map[string]slim.Object{
+										"text": &slim.String{
 											Value: s1[m[i]:m[i+1]],
 										},
-										"begin": &tengo.Int{
+										"begin": &slim.Int{
 											Value: int64(m[i]),
 										},
-										"end": &tengo.Int{
+										"end": &slim.Int{
 											Value: int64(m[i+1]),
 										},
 									}})
@@ -136,19 +136,19 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 			},
 
 			// replace(src, repl) => string
-			"replace": &tengo.UserFunction{
-				Value: func(args ...tengo.Object) (
-					ret tengo.Object,
+			"replace": &slim.UserFunction{
+				Value: func(args ...slim.Object) (
+					ret slim.Object,
 					err error,
 				) {
 					if len(args) != 2 {
-						err = tengo.ErrWrongNumArguments
+						err = slim.ErrWrongNumArguments
 						return
 					}
 
-					s1, ok := tengo.ToString(args[0])
+					s1, ok := slim.ToString(args[0])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "string(compatible)",
 							Found:    args[0].TypeName(),
@@ -156,9 +156,9 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 						return
 					}
 
-					s2, ok := tengo.ToString(args[1])
+					s2, ok := slim.ToString(args[1])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "second",
 							Expected: "string(compatible)",
 							Found:    args[1].TypeName(),
@@ -168,10 +168,10 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 
 					s, ok := doTextRegexpReplace(re, s1, s2)
 					if !ok {
-						return nil, tengo.ErrStringLimit
+						return nil, slim.ErrStringLimit
 					}
 
-					ret = &tengo.String{Value: s}
+					ret = &slim.String{Value: s}
 
 					return
 				},
@@ -179,20 +179,20 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 
 			// split(text) 			 => array(string)
 			// split(text, maxCount) => array(string)
-			"split": &tengo.UserFunction{
-				Value: func(args ...tengo.Object) (
-					ret tengo.Object,
+			"split": &slim.UserFunction{
+				Value: func(args ...slim.Object) (
+					ret slim.Object,
 					err error,
 				) {
 					numArgs := len(args)
 					if numArgs != 1 && numArgs != 2 {
-						err = tengo.ErrWrongNumArguments
+						err = slim.ErrWrongNumArguments
 						return
 					}
 
-					s1, ok := tengo.ToString(args[0])
+					s1, ok := slim.ToString(args[0])
 					if !ok {
-						err = tengo.ErrInvalidArgumentType{
+						err = slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "string(compatible)",
 							Found:    args[0].TypeName(),
@@ -202,9 +202,9 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 
 					var i2 = -1
 					if numArgs > 1 {
-						i2, ok = tengo.ToInt(args[1])
+						i2, ok = slim.ToInt(args[1])
 						if !ok {
-							err = tengo.ErrInvalidArgumentType{
+							err = slim.ErrInvalidArgumentType{
 								Name:     "second",
 								Expected: "int(compatible)",
 								Found:    args[1].TypeName(),
@@ -213,10 +213,10 @@ func makeTextRegexp(re *regexp.Regexp) *tengo.ImmutableMap {
 						}
 					}
 
-					arr := &tengo.Array{}
+					arr := &slim.Array{}
 					for _, s := range re.Split(s1, i2) {
 						arr.Value = append(arr.Value,
-							&tengo.String{Value: s})
+							&slim.String{Value: s})
 					}
 
 					ret = arr
@@ -235,14 +235,14 @@ func doTextRegexpReplace(re *regexp.Regexp, src, repl string) (string, bool) {
 	for _, m := range re.FindAllStringSubmatchIndex(src, -1) {
 		var exp []byte
 		exp = re.ExpandString(exp, repl, src, m)
-		if len(out)+m[0]-idx+len(exp) > tengo.MaxStringLen {
+		if len(out)+m[0]-idx+len(exp) > slim.MaxStringLen {
 			return "", false
 		}
 		out += src[idx:m[0]] + string(exp)
 		idx = m[1]
 	}
 	if idx < len(src) {
-		if len(out)+len(src)-idx > tengo.MaxStringLen {
+		if len(out)+len(src)-idx > slim.MaxStringLen {
 			return "", false
 		}
 		out += src[idx:]

@@ -1,14 +1,14 @@
-package tengo_test
+package slim_test
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
 func Example() {
-	// Tengo script code
+	// slim script code
 	src := `
 each := func(seq, fn) {
     for x in seq { fn(x) }
@@ -22,7 +22,7 @@ each([a, b, c, d], func(x) {
 })`
 
 	// create a new Script instance
-	script := tengo.NewScript([]byte(src))
+	script := slim.NewScript([]byte(src))
 
 	// set values
 	_ = script.Add("a", 1)

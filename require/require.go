@@ -10,9 +10,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/token"
+	"github.com/snple/slim"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/token"
 )
 
 // NoError asserts err is not an error.
@@ -120,8 +120,8 @@ func Equal(
 		if expected != actual.(rune) {
 			failExpectedActual(t, expected, actual, msg...)
 		}
-	case *tengo.Symbol:
-		if !equalSymbol(expected, actual.(*tengo.Symbol)) {
+	case *slim.Symbol:
+		if !equalSymbol(expected, actual.(*slim.Symbol)) {
 			failExpectedActual(t, expected, actual, msg...)
 		}
 	case parser.Pos:
@@ -132,48 +132,48 @@ func Equal(
 		if expected != actual.(token.Token) {
 			failExpectedActual(t, expected, actual, msg...)
 		}
-	case []tengo.Object:
-		equalObjectSlice(t, expected, actual.([]tengo.Object), msg...)
-	case *tengo.Int:
-		Equal(t, expected.Value, actual.(*tengo.Int).Value, msg...)
-	case *tengo.Float:
-		Equal(t, expected.Value, actual.(*tengo.Float).Value, msg...)
-	case *tengo.String:
-		Equal(t, expected.Value, actual.(*tengo.String).Value, msg...)
-	case *tengo.Char:
-		Equal(t, expected.Value, actual.(*tengo.Char).Value, msg...)
-	case *tengo.Bool:
+	case []slim.Object:
+		equalObjectSlice(t, expected, actual.([]slim.Object), msg...)
+	case *slim.Int:
+		Equal(t, expected.Value, actual.(*slim.Int).Value, msg...)
+	case *slim.Float:
+		Equal(t, expected.Value, actual.(*slim.Float).Value, msg...)
+	case *slim.String:
+		Equal(t, expected.Value, actual.(*slim.String).Value, msg...)
+	case *slim.Char:
+		Equal(t, expected.Value, actual.(*slim.Char).Value, msg...)
+	case *slim.Bool:
 		if expected != actual {
 			failExpectedActual(t, expected, actual, msg...)
 		}
-	case *tengo.Array:
+	case *slim.Array:
 		equalObjectSlice(t, expected.Value,
-			actual.(*tengo.Array).Value, msg...)
-	case *tengo.ImmutableArray:
+			actual.(*slim.Array).Value, msg...)
+	case *slim.ImmutableArray:
 		equalObjectSlice(t, expected.Value,
-			actual.(*tengo.ImmutableArray).Value, msg...)
-	case *tengo.Bytes:
-		if !bytes.Equal(expected.Value, actual.(*tengo.Bytes).Value) {
+			actual.(*slim.ImmutableArray).Value, msg...)
+	case *slim.Bytes:
+		if !bytes.Equal(expected.Value, actual.(*slim.Bytes).Value) {
 			failExpectedActual(t, string(expected.Value),
-				string(actual.(*tengo.Bytes).Value), msg...)
+				string(actual.(*slim.Bytes).Value), msg...)
 		}
-	case *tengo.Map:
+	case *slim.Map:
 		equalObjectMap(t, expected.Value,
-			actual.(*tengo.Map).Value, msg...)
-	case *tengo.ImmutableMap:
+			actual.(*slim.Map).Value, msg...)
+	case *slim.ImmutableMap:
 		equalObjectMap(t, expected.Value,
-			actual.(*tengo.ImmutableMap).Value, msg...)
-	case *tengo.CompiledFunction:
+			actual.(*slim.ImmutableMap).Value, msg...)
+	case *slim.CompiledFunction:
 		equalCompiledFunction(t, expected,
-			actual.(*tengo.CompiledFunction), msg...)
-	case *tengo.Undefined:
+			actual.(*slim.CompiledFunction), msg...)
+	case *slim.Undefined:
 		if expected != actual {
 			failExpectedActual(t, expected, actual, msg...)
 		}
-	case *tengo.Error:
-		Equal(t, expected.Value, actual.(*tengo.Error).Value, msg...)
-	case tengo.Object:
-		if !expected.Equals(actual.(tengo.Object)) {
+	case *slim.Error:
+		Equal(t, expected.Value, actual.(*slim.Error).Value, msg...)
+	case slim.Object:
+		if !expected.Equals(actual.(slim.Object)) {
 			failExpectedActual(t, expected, actual, msg...)
 		}
 	case *parser.SourceFileSet:
@@ -253,7 +253,7 @@ func equalStringSlice(a, b []string) bool {
 	return true
 }
 
-func equalSymbol(a, b *tengo.Symbol) bool {
+func equalSymbol(a, b *slim.Symbol) bool {
 	return a.Name == b.Name &&
 		a.Index == b.Index &&
 		a.Scope == b.Scope
@@ -261,7 +261,7 @@ func equalSymbol(a, b *tengo.Symbol) bool {
 
 func equalObjectSlice(
 	t *testing.T,
-	expected, actual []tengo.Object,
+	expected, actual []slim.Object,
 	msg ...interface{},
 ) {
 	Equal(t, len(expected), len(actual), msg...)
@@ -285,7 +285,7 @@ func equalFileSet(
 
 func equalObjectMap(
 	t *testing.T,
-	expected, actual map[string]tengo.Object,
+	expected, actual map[string]slim.Object,
 	msg ...interface{},
 ) {
 	Equal(t, len(expected), len(actual), msg...)
@@ -297,14 +297,14 @@ func equalObjectMap(
 
 func equalCompiledFunction(
 	t *testing.T,
-	expected, actual tengo.Object,
+	expected, actual slim.Object,
 	msg ...interface{},
 ) {
-	expectedT := expected.(*tengo.CompiledFunction)
-	actualT := actual.(*tengo.CompiledFunction)
+	expectedT := expected.(*slim.CompiledFunction)
+	actualT := actual.(*slim.CompiledFunction)
 	Equal(t,
-		tengo.FormatInstructions(expectedT.Instructions, 0),
-		tengo.FormatInstructions(actualT.Instructions, 0), msg...)
+		slim.FormatInstructions(expectedT.Instructions, 0),
+		slim.FormatInstructions(actualT.Instructions, 0), msg...)
 }
 
 func isNil(v interface{}) bool {

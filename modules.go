@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 // Importable interface represents importable module instance.
 type Importable interface {
@@ -87,7 +87,7 @@ func (m *ModuleMap) AddMap(o *ModuleMap) {
 	}
 }
 
-// SourceModule is an importable module that's written in Tengo.
+// SourceModule is an importable module that's written in slim.
 type SourceModule struct {
 	Src []byte
 }

@@ -1,4 +1,4 @@
-package tengo_test
+package slim_test
 
 import (
 	"errors"
@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/require"
-	"github.com/d5/tengo/v2/stdlib"
-	"github.com/d5/tengo/v2/token"
+	"github.com/snple/slim"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/require"
+	"github.com/snple/slim/stdlib"
+	"github.com/snple/slim/token"
 )
 
 const testOut = "out"
@@ -25,16 +25,16 @@ type MAP = map[string]interface{}
 type ARR = []interface{}
 
 type testopts struct {
-	modules     *tengo.ModuleMap
-	symbols     map[string]tengo.Object
+	modules     *slim.ModuleMap
+	symbols     map[string]slim.Object
 	maxAllocs   int64
 	skip2ndPass bool
 }
 
 func Opts() *testopts {
 	return &testopts{
-		modules:     tengo.NewModuleMap(),
-		symbols:     make(map[string]tengo.Object),
+		modules:     slim.NewModuleMap(),
+		symbols:     make(map[string]slim.Object),
 		maxAllocs:   -1,
 		skip2ndPass: false,
 	}
@@ -43,7 +43,7 @@ func Opts() *testopts {
 func (o *testopts) copy() *testopts {
 	c := &testopts{
 		modules:     o.modules.Copy(),
-		symbols:     make(map[string]tengo.Object),
+		symbols:     make(map[string]slim.Object),
 		maxAllocs:   o.maxAllocs,
 		skip2ndPass: o.skip2ndPass,
 	}
@@ -61,7 +61,7 @@ func (o *testopts) Stdlib() *testopts {
 func (o *testopts) Module(name string, mod interface{}) *testopts {
 	c := o.copy()
 	switch mod := mod.(type) {
-	case tengo.Importable:
+	case slim.Importable:
 		c.modules.Add(name, mod)
 	case string:
 		c.modules.AddSourceModule(name, []byte(mod))
@@ -73,7 +73,7 @@ func (o *testopts) Module(name string, mod interface{}) *testopts {
 	return c
 }
 
-func (o *testopts) Symbol(name string, value tengo.Object) *testopts {
+func (o *testopts) Symbol(name string, value slim.Object) *testopts {
 	c := o.copy()
 	c.symbols[name] = value
 	return c
@@ -133,9 +133,9 @@ func TestArray(t *testing.T) {
 	}
 
 	expectRun(t, fmt.Sprintf("%s[%d]", arrStr, -1),
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, fmt.Sprintf("%s[%d]", arrStr, arrLen),
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	// slice operator
 	for low := 0; low < arrLen; low++ {
@@ -189,7 +189,7 @@ func TestAssignment(t *testing.T) {
 	expectRun(t, `a := 1; func() { a := 2 }(); out = a`, nil, 1) // "a := 2" defines a new local variable 'a'
 	expectRun(t, `a := 1; func() { b := 2; out = b }()`, nil, 2)
 	expectRun(t, `
-out = func() { 
+out = func() {
 	a := 2
 	func() {
 		a = 3 // captured from outer scope
@@ -201,8 +201,8 @@ out = func() {
 	expectRun(t, `
 func() {
 	a := 5
-	out = func() {  	
-		a := 4						
+	out = func() {
+		a := 4
 		return a
 	}()
 }()`, nil, 4)
@@ -226,15 +226,15 @@ func() {
 	expectError(t, `a /= 4`, nil, "unresolved reference")
 
 	expectRun(t, `
-f1 := func() { 
-	f2 := func() { 
+f1 := func() {
+	f2 := func() {
 		a := 1
 		a += 2    // it's a statement, not an expression
 		return a
-	}; 
-	
-	return f2(); 
-}; 
+	};
+
+	return f2();
+};
 
 out = f1();`, nil, 3)
 	expectRun(t, `f1 := func() { f2 := func() { a := 1; a += 4 - 2; return a }; return f2(); }; out = f1()`,
@@ -263,7 +263,7 @@ out = f1();`, nil, 3)
 			return c
 		}
 	}
-	
+
 	out = f1(3)(4)
 	`, nil, 11)
 
@@ -287,7 +287,7 @@ out = f1();`, nil, 3)
 	expectRun(t, `
 	f1 := func() {
 		a := 5
-	
+
 		return func() {
 			a += 3
 			return a
@@ -315,7 +315,7 @@ out = f1();`, nil, 3)
 			fn(seq[1])
 			fn(seq[2])
 		}
-	
+
 		foo := func(a) {
 			b := 0
 			it([1, 2, 3], func(x) {
@@ -323,7 +323,7 @@ out = f1();`, nil, 3)
 			})
 			return b
 		}
-	
+
 		out = foo(2)
 		`, nil, 5)
 
@@ -333,7 +333,7 @@ out = f1();`, nil, 3)
 			fn(seq[1])
 			fn(seq[2])
 		}
-	
+
 		foo := func(a) {
 			b := 0
 			it([1, 2, 3], func(x) {
@@ -341,7 +341,7 @@ out = f1();`, nil, 3)
 			})
 			return b
 		}
-	
+
 		out = foo(2)
 		`, nil, 12)
 
@@ -389,9 +389,9 @@ out = func() {
 	expectRun(t, `a := 1; a = "foo"; out = a`, nil, "foo")              // global
 	expectRun(t, `func() { a := 1; a = "foo"; out = a }()`, nil, "foo") // local
 	expectRun(t, `
-out = func() { 
+out = func() {
 	a := 5
-	return func() { 
+	return func() {
 		a = "foo"
 		return a
 	}()
@@ -532,11 +532,11 @@ func() {
 }
 
 func TestUndefined(t *testing.T) {
-	expectRun(t, `out = undefined`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = undefined.a`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = undefined[1]`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = undefined.a.b`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = undefined[1][2]`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = undefined`, nil, slim.UndefinedValue)
+	expectRun(t, `out = undefined.a`, nil, slim.UndefinedValue)
+	expectRun(t, `out = undefined[1]`, nil, slim.UndefinedValue)
+	expectRun(t, `out = undefined.a.b`, nil, slim.UndefinedValue)
+	expectRun(t, `out = undefined[1][2]`, nil, slim.UndefinedValue)
 	expectRun(t, `out = undefined ? 1 : 2`, nil, 2)
 	expectRun(t, `out = undefined == undefined`, nil, true)
 	expectRun(t, `out = undefined == 1`, nil, false)
@@ -574,14 +574,14 @@ func TestBuiltinFunction(t *testing.T) {
 	expectRun(t, `out = int(true)`, nil, 1)
 	expectRun(t, `out = int(false)`, nil, 0)
 	expectRun(t, `out = int('8')`, nil, 56)
-	expectRun(t, `out = int([1])`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = int({a: 1})`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = int(undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = int([1])`, nil, slim.UndefinedValue)
+	expectRun(t, `out = int({a: 1})`, nil, slim.UndefinedValue)
+	expectRun(t, `out = int(undefined)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = int("-522", 1)`, nil, -522)
 	expectRun(t, `out = int(undefined, 1)`, nil, 1)
 	expectRun(t, `out = int(undefined, 1.8)`, nil, 1.8)
 	expectRun(t, `out = int(undefined, string(1))`, nil, "1")
-	expectRun(t, `out = int(undefined, undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = int(undefined, undefined)`, nil, slim.UndefinedValue)
 
 	expectRun(t, `out = string(1)`, nil, "1")
 	expectRun(t, `out = string(1.8)`, nil, "1.8")
@@ -591,40 +591,40 @@ func TestBuiltinFunction(t *testing.T) {
 	expectRun(t, `out = string('8')`, nil, "8")
 	expectRun(t, `out = string([1,8.1,true,3])`, nil, "[1, 8.1, true, 3]")
 	expectRun(t, `out = string({b: "foo"})`, nil, `{b: "foo"}`)
-	expectRun(t, `out = string(undefined)`, nil, tengo.UndefinedValue) // not "undefined"
+	expectRun(t, `out = string(undefined)`, nil, slim.UndefinedValue) // not "undefined"
 	expectRun(t, `out = string(1, "-522")`, nil, "1")
 	expectRun(t, `out = string(undefined, "-522")`, nil, "-522") // not "undefined"
 
 	expectRun(t, `out = float(1)`, nil, 1.0)
 	expectRun(t, `out = float(1.8)`, nil, 1.8)
 	expectRun(t, `out = float("-52.2")`, nil, -52.2)
-	expectRun(t, `out = float(true)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = float(false)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = float('8')`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = float([1,8.1,true,3])`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = float({a: 1, b: "foo"})`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = float(undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = float(true)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = float(false)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = float('8')`, nil, slim.UndefinedValue)
+	expectRun(t, `out = float([1,8.1,true,3])`, nil, slim.UndefinedValue)
+	expectRun(t, `out = float({a: 1, b: "foo"})`, nil, slim.UndefinedValue)
+	expectRun(t, `out = float(undefined)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = float("-52.2", 1.8)`, nil, -52.2)
 	expectRun(t, `out = float(undefined, 1)`, nil, 1)
 	expectRun(t, `out = float(undefined, 1.8)`, nil, 1.8)
 	expectRun(t, `out = float(undefined, "-52.2")`, nil, "-52.2")
 	expectRun(t, `out = float(undefined, char(56))`, nil, '8')
-	expectRun(t, `out = float(undefined, undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = float(undefined, undefined)`, nil, slim.UndefinedValue)
 
 	expectRun(t, `out = char(56)`, nil, '8')
-	expectRun(t, `out = char(1.8)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = char("-52.2")`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = char(true)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = char(false)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = char(1.8)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = char("-52.2")`, nil, slim.UndefinedValue)
+	expectRun(t, `out = char(true)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = char(false)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = char('8')`, nil, '8')
-	expectRun(t, `out = char([1,8.1,true,3])`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = char({a: 1, b: "foo"})`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = char(undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = char([1,8.1,true,3])`, nil, slim.UndefinedValue)
+	expectRun(t, `out = char({a: 1, b: "foo"})`, nil, slim.UndefinedValue)
+	expectRun(t, `out = char(undefined)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = char(56, 'a')`, nil, '8')
 	expectRun(t, `out = char(undefined, '8')`, nil, '8')
 	expectRun(t, `out = char(undefined, 56)`, nil, 56)
 	expectRun(t, `out = char(undefined, "-52.2")`, nil, "-52.2")
-	expectRun(t, `out = char(undefined, undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = char(undefined, undefined)`, nil, slim.UndefinedValue)
 
 	expectRun(t, `out = bool(1)`, nil, true)          // non-zero integer: true
 	expectRun(t, `out = bool(0)`, nil, false)         // zero: true
@@ -643,20 +643,20 @@ func TestBuiltinFunction(t *testing.T) {
 	expectRun(t, `out = bool(undefined)`, nil, false) // undefined: false
 
 	expectRun(t, `out = bytes(1)`, nil, []byte{0})
-	expectRun(t, `out = bytes(1.8)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = bytes(1.8)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = bytes("-522")`, nil, []byte{'-', '5', '2', '2'})
-	expectRun(t, `out = bytes(true)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = bytes(false)`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = bytes('8')`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = bytes([1])`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = bytes({a: 1})`, nil, tengo.UndefinedValue)
-	expectRun(t, `out = bytes(undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = bytes(true)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = bytes(false)`, nil, slim.UndefinedValue)
+	expectRun(t, `out = bytes('8')`, nil, slim.UndefinedValue)
+	expectRun(t, `out = bytes([1])`, nil, slim.UndefinedValue)
+	expectRun(t, `out = bytes({a: 1})`, nil, slim.UndefinedValue)
+	expectRun(t, `out = bytes(undefined)`, nil, slim.UndefinedValue)
 	expectRun(t, `out = bytes("-522", ['8'])`, nil, []byte{'-', '5', '2', '2'})
 	expectRun(t, `out = bytes(undefined, "-522")`, nil, "-522")
 	expectRun(t, `out = bytes(undefined, 1)`, nil, 1)
 	expectRun(t, `out = bytes(undefined, 1.8)`, nil, 1.8)
 	expectRun(t, `out = bytes(undefined, int("-522"))`, nil, -522)
-	expectRun(t, `out = bytes(undefined, undefined)`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = bytes(undefined, undefined)`, nil, slim.UndefinedValue)
 
 	expectRun(t, `out = is_error(error(1))`, nil, true)
 	expectRun(t, `out = is_error(1)`, nil, false)
@@ -722,16 +722,16 @@ func TestBuiltinFunction(t *testing.T) {
 	expectRun(t, `out = format("%v", [1, [2, [3, 4]]])`,
 		nil, `[1, [2, [3, 4]]]`)
 
-	tengo.MaxStringLen = 9
+	slim.MaxStringLen = 9
 	expectError(t, `format("%s", "1234567890")`,
 		nil, "exceeding string size limit")
-	tengo.MaxStringLen = 2147483647
+	slim.MaxStringLen = 2147483647
 
 	// delete
-	expectError(t, `delete()`, nil, tengo.ErrWrongNumArguments.Error())
-	expectError(t, `delete(1)`, nil, tengo.ErrWrongNumArguments.Error())
-	expectError(t, `delete(1, 2, 3)`, nil, tengo.ErrWrongNumArguments.Error())
-	expectError(t, `delete({}, "", 3)`, nil, tengo.ErrWrongNumArguments.Error())
+	expectError(t, `delete()`, nil, slim.ErrWrongNumArguments.Error())
+	expectError(t, `delete(1)`, nil, slim.ErrWrongNumArguments.Error())
+	expectError(t, `delete(1, 2, 3)`, nil, slim.ErrWrongNumArguments.Error())
+	expectError(t, `delete({}, "", 3)`, nil, slim.ErrWrongNumArguments.Error())
 	expectError(t, `delete(1, 1)`, nil, `invalid type for argument 'first'`)
 	expectError(t, `delete(1.0, 1)`, nil, `invalid type for argument 'first'`)
 	expectError(t, `delete("str", 1)`, nil, `invalid type for argument 'first'`)
@@ -770,7 +770,7 @@ func TestBuiltinFunction(t *testing.T) {
 	expectError(t, `delete({}, immutable([]))`, nil,
 		`invalid type for argument 'second'`)
 
-	expectRun(t, `out = delete({}, "")`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = delete({}, "")`, nil, slim.UndefinedValue)
 	expectRun(t, `out = {key1: 1}; delete(out, "key1")`, nil, MAP{})
 	expectRun(t, `out = {key1: 1, key2: "2"}; delete(out, "key1")`, nil,
 		MAP{"key2": "2"})
@@ -778,7 +778,7 @@ func TestBuiltinFunction(t *testing.T) {
 		ARR{1, "2", MAP{"a": "b"}})
 
 	// splice
-	expectError(t, `splice()`, nil, tengo.ErrWrongNumArguments.Error())
+	expectError(t, `splice()`, nil, slim.ErrWrongNumArguments.Error())
 	expectError(t, `splice(1)`, nil, `invalid type for argument 'first'`)
 	expectError(t, `splice(1.0)`, nil, `invalid type for argument 'first'`)
 	expectError(t, `splice("str")`, nil, `invalid type for argument 'first'`)
@@ -846,11 +846,11 @@ func TestBuiltinFunction(t *testing.T) {
 		`invalid type for argument 'third'`)
 	expectError(t, `splice([], 0, immutable({}))`, nil,
 		`invalid type for argument 'third'`)
-	expectError(t, `splice([], 1)`, nil, tengo.ErrIndexOutOfBounds.Error())
+	expectError(t, `splice([], 1)`, nil, slim.ErrIndexOutOfBounds.Error())
 	expectError(t, `splice([1, 2, 3], 0, -1)`, nil,
-		tengo.ErrIndexOutOfBounds.Error())
+		slim.ErrIndexOutOfBounds.Error())
 	expectError(t, `splice([1, 2, 3], 99, 0, "a", "b")`, nil,
-		tengo.ErrIndexOutOfBounds.Error())
+		slim.ErrIndexOutOfBounds.Error())
 	expectRun(t, `out = []; splice(out)`, nil, ARR{})
 	expectRun(t, `out = ["a"]; splice(out, 1)`, nil, ARR{"a"})
 	expectRun(t, `out = ["a"]; out = splice(out, 1)`, nil, ARR{})
@@ -872,7 +872,7 @@ func TestBuiltinFunction(t *testing.T) {
 		ARR{1, 2, 3, "a", "b"})
 	expectRun(t, `array := [1, 2, 3]; deleted := splice(array, 1, 1, "a", "b");
 				out = [deleted, array]`, nil, ARR{ARR{2}, ARR{1, "a", "b", 3}})
-	expectRun(t, `array := [1, 2, 3]; deleted := splice(array, 1); 
+	expectRun(t, `array := [1, 2, 3]; deleted := splice(array, 1);
 		out = [deleted, array]`, nil, ARR{ARR{2, 3}, ARR{1}})
 	expectRun(t, `out = []; splice(out, 0, 0, "a", "b")`, nil, ARR{"a", "b"})
 	expectRun(t, `out = []; splice(out, 0, 1, "a", "b")`, nil, ARR{"a", "b"})
@@ -896,15 +896,15 @@ func TestBuiltinFunction(t *testing.T) {
 }
 
 func TestBytesN(t *testing.T) {
-	curMaxBytesLen := tengo.MaxBytesLen
-	defer func() { tengo.MaxBytesLen = curMaxBytesLen }()
-	tengo.MaxBytesLen = 10
+	curMaxBytesLen := slim.MaxBytesLen
+	defer func() { slim.MaxBytesLen = curMaxBytesLen }()
+	slim.MaxBytesLen = 10
 
 	expectRun(t, `out = bytes(0)`, nil, make([]byte, 0))
 	expectRun(t, `out = bytes(10)`, nil, make([]byte, 10))
 	expectError(t, `bytes(11)`, nil, "bytes size limit")
 
-	tengo.MaxBytesLen = 1000
+	slim.MaxBytesLen = 1000
 	expectRun(t, `out = bytes(1000)`, nil, make([]byte, 1000))
 	expectError(t, `bytes(1001)`, nil, "bytes size limit")
 }
@@ -918,7 +918,7 @@ func TestBytes(t *testing.T) {
 	expectRun(t, `out = bytes("abcde")[0]`, nil, 97)
 	expectRun(t, `out = bytes("abcde")[1]`, nil, 98)
 	expectRun(t, `out = bytes("abcde")[4]`, nil, 101)
-	expectRun(t, `out = bytes("abcde")[10]`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = bytes("abcde")[10]`, nil, slim.UndefinedValue)
 }
 
 func TestCall(t *testing.T) {
@@ -1103,17 +1103,17 @@ export func() {
 
 func TestVMErrorUnwrap(t *testing.T) {
 	userErr := errors.New("user runtime error")
-	userFunc := func(err error) *tengo.UserFunction {
-		return &tengo.UserFunction{Name: "user_func", Value: func(args ...tengo.Object) (tengo.Object, error) {
+	userFunc := func(err error) *slim.UserFunction {
+		return &slim.UserFunction{Name: "user_func", Value: func(args ...slim.Object) (slim.Object, error) {
 			return nil, err
 		}}
 	}
-	userModule := func(err error) *tengo.BuiltinModule {
-		return &tengo.BuiltinModule{
-			Attrs: map[string]tengo.Object{
-				"afunction": &tengo.UserFunction{
+	userModule := func(err error) *slim.BuiltinModule {
+		return &slim.BuiltinModule{
+			Attrs: map[string]slim.Object{
+				"afunction": &slim.UserFunction{
 					Name: "afunction",
-					Value: func(a ...tengo.Object) (tengo.Object, error) {
+					Value: func(a ...slim.Object) (slim.Object, error) {
 						return nil, err
 					},
 				},
@@ -1471,11 +1471,11 @@ func TestFor(t *testing.T) {
 func TestFunction(t *testing.T) {
 	// function with no "return" statement returns "invalid" value.
 	expectRun(t, `f1 := func() {}; out = f1();`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `f1 := func() {}; f2 := func() { return f1(); }; f1(); out = f2();`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `f := func(x) { x; }; out = f(5);`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	expectRun(t, `f := func(...x) { return x; }; out = f(1,2,3);`,
 		nil, ARR{1, 2, 3})
@@ -1487,7 +1487,7 @@ func TestFunction(t *testing.T) {
 		nil, ARR{"a", ARR{"b"}, 7})
 
 	expectRun(t, `f := func(...x) { return x; }; out = f();`,
-		nil, &tengo.Array{Value: []tengo.Object{}})
+		nil, &slim.Array{Value: []slim.Object{}})
 
 	expectRun(t, `f := func(a, b, ...x) { return [a, b, x]; }; out = f(8, 9);`,
 		nil, ARR{8, 9, ARR{}})
@@ -1514,10 +1514,10 @@ func TestFunction(t *testing.T) {
 		f1 := func(a) {
 			return a * 2;
 		};
-	
+
 		return f1(a) * 3;
 	};
-	
+
 	out = f2(10);
 	`, nil, 60)
 
@@ -1536,7 +1536,7 @@ func TestFunction(t *testing.T) {
 		newAdder := func(x) {
 			return func(y) { return x + y };
 		};
-	
+
 		add2 := newAdder(2);
 		out = add2(5);
 		`, nil, 7)
@@ -1562,7 +1562,7 @@ func TestFunction(t *testing.T) {
 	add := func(a, b) { return a + b };
 	sub := func(a, b) { return a - b };
 	applyFunc := func(a, b, f) { return f(a, b) };
-	
+
 	out = applyFunc(applyFunc(2, 2, add), 3, sub);
 	`, nil, 1)
 
@@ -1647,16 +1647,16 @@ func TestFunction(t *testing.T) {
 
 	expectRun(t, `
 	g := 10;
-	
+
 	sum := func(a, b) {
 		c := a + b;
 		return c + g;
 	}
-	
+
 	outer := func() {
 		return sum(1, 2) + sum(3, 4) + g;
 	}
-	
+
 	out = outer() + g
 	`, nil, 50)
 
@@ -1679,7 +1679,7 @@ func TestFunction(t *testing.T) {
 		f1 := func(a, b) {
 			return func(c) { return a + b + c };
 		};
-	
+
 		f2 := f1(1, 2);
 		out = f2(8);
 		`, nil, 11)
@@ -1784,26 +1784,26 @@ func() {
 
 	// function skipping return
 	expectRun(t, `out = func() {}()`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { if v { return true } }(1)`,
 		nil, true)
 	expectRun(t, `out = func(v) { if v { return true } }(0)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { if v { } else { return true } }(1)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { if v { return } }(1)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { if v { return } }(0)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { if v { } else { return } }(1)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, `out = func(v) { for ;;v++ { if v == 3 { return true } } }(1)`,
 		nil, true)
 	expectRun(t, `out = func(v) { for ;;v++ { if v == 3 { break } } }(1)`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	// 'f' in RHS at line 4 must reference global variable 'f'
-	// See https://github.com/d5/tengo/issues/314
+	// See https://github.com/snple/slim/issues/314
 	expectRun(t, `
 f := func() { return 2 }
 out = (func() {
@@ -1901,12 +1901,12 @@ for x in [1, 2, 3] {
 func TestIf(t *testing.T) {
 
 	expectRun(t, `if (true) { out = 10 }`, nil, 10)
-	expectRun(t, `if (false) { out = 10 }`, nil, tengo.UndefinedValue)
+	expectRun(t, `if (false) { out = 10 }`, nil, slim.UndefinedValue)
 	expectRun(t, `if (false) { out = 10 } else { out = 20 }`, nil, 20)
 	expectRun(t, `if (1) { out = 10 }`, nil, 10)
 	expectRun(t, `if (0) { out = 10 } else { out = 20 }`, nil, 20)
 	expectRun(t, `if (1 < 2) { out = 10 }`, nil, 10)
-	expectRun(t, `if (1 > 2) { out = 10 }`, nil, tengo.UndefinedValue)
+	expectRun(t, `if (1 > 2) { out = 10 }`, nil, slim.UndefinedValue)
 	expectRun(t, `if (1 < 2) { out = 10 } else { out = 20 }`, nil, 10)
 	expectRun(t, `if (1 > 2) { out = 10 } else { out = 20 }`, nil, 20)
 
@@ -1981,21 +1981,21 @@ out = func() {
 		b := func() {
 			return is_callable(a) ? a(8) : a
 		}()
-		if is_error(b) { 
-			return b 
-		} else if !is_undefined(b) { 
+		if is_error(b) {
+			return b
+		} else if !is_undefined(b) {
 			return immutable(b)
 		}
 	}
-	
+
 	a = 3
 	if a {
 		b := func() {
 			return is_callable(a) ? a(9) : a
 		}()
-		if is_error(b) { 
-			return b 
-		} else if !is_undefined(b) { 
+		if is_error(b) {
+			return b
+		} else if !is_undefined(b) {
 			return immutable(b)
 		}
 	}
@@ -2046,7 +2046,7 @@ func TestImmutable(t *testing.T) {
 	expectRun(t, `a := immutable([1,2,3]); a = 5; out = a`,
 		nil, 5)
 	expectRun(t, `a := immutable([1, 2, 3]); out = a[5]`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	// map
 	expectError(t, `a := immutable({b: 1, c: 2}); a.b = 5`,
@@ -2078,7 +2078,7 @@ func TestImmutable(t *testing.T) {
 	expectRun(t, `a := immutable({a:1,b:2}); a = 5; out = 5`,
 		nil, 5)
 	expectRun(t, `a := immutable({a:1,b:2}); out = a.c`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	expectRun(t, `a := immutable({b: 5, c: "foo"}); out = a.b`,
 		nil, 5)
@@ -2103,7 +2103,7 @@ func TestIncDec(t *testing.T) {
 }
 
 type StringDict struct {
-	tengo.ObjectImpl
+	slim.ObjectImpl
 	Value map[string]string
 }
 
@@ -2113,30 +2113,30 @@ func (o *StringDict) TypeName() string {
 	return "string-dict"
 }
 
-func (o *StringDict) IndexGet(index tengo.Object) (tengo.Object, error) {
-	strIdx, ok := index.(*tengo.String)
+func (o *StringDict) IndexGet(index slim.Object) (slim.Object, error) {
+	strIdx, ok := index.(*slim.String)
 	if !ok {
-		return nil, tengo.ErrInvalidIndexType
+		return nil, slim.ErrInvalidIndexType
 	}
 
 	for k, v := range o.Value {
 		if strings.EqualFold(strIdx.Value, k) {
-			return &tengo.String{Value: v}, nil
+			return &slim.String{Value: v}, nil
 		}
 	}
 
-	return tengo.UndefinedValue, nil
+	return slim.UndefinedValue, nil
 }
 
-func (o *StringDict) IndexSet(index, value tengo.Object) error {
-	strIdx, ok := index.(*tengo.String)
+func (o *StringDict) IndexSet(index, value slim.Object) error {
+	strIdx, ok := index.(*slim.String)
 	if !ok {
-		return tengo.ErrInvalidIndexType
+		return slim.ErrInvalidIndexType
 	}
 
-	strVal, ok := tengo.ToString(value)
+	strVal, ok := slim.ToString(value)
 	if !ok {
-		return tengo.ErrInvalidIndexValueType
+		return slim.ErrInvalidIndexValueType
 	}
 
 	o.Value[strings.ToLower(strIdx.Value)] = strVal
@@ -2145,7 +2145,7 @@ func (o *StringDict) IndexSet(index, value tengo.Object) error {
 }
 
 type StringCircle struct {
-	tengo.ObjectImpl
+	slim.ObjectImpl
 	Value []string
 }
 
@@ -2157,10 +2157,10 @@ func (o *StringCircle) String() string {
 	return ""
 }
 
-func (o *StringCircle) IndexGet(index tengo.Object) (tengo.Object, error) {
-	intIdx, ok := index.(*tengo.Int)
+func (o *StringCircle) IndexGet(index slim.Object) (slim.Object, error) {
+	intIdx, ok := index.(*slim.Int)
 	if !ok {
-		return nil, tengo.ErrInvalidIndexType
+		return nil, slim.ErrInvalidIndexType
 	}
 
 	r := int(intIdx.Value) % len(o.Value)
@@ -2168,13 +2168,13 @@ func (o *StringCircle) IndexGet(index tengo.Object) (tengo.Object, error) {
 		r = len(o.Value) + r
 	}
 
-	return &tengo.String{Value: o.Value[r]}, nil
+	return &slim.String{Value: o.Value[r]}, nil
 }
 
-func (o *StringCircle) IndexSet(index, value tengo.Object) error {
-	intIdx, ok := index.(*tengo.Int)
+func (o *StringCircle) IndexSet(index, value slim.Object) error {
+	intIdx, ok := index.(*slim.Int)
 	if !ok {
-		return tengo.ErrInvalidIndexType
+		return slim.ErrInvalidIndexType
 	}
 
 	r := int(intIdx.Value) % len(o.Value)
@@ -2182,9 +2182,9 @@ func (o *StringCircle) IndexSet(index, value tengo.Object) error {
 		r = len(o.Value) + r
 	}
 
-	strVal, ok := tengo.ToString(value)
+	strVal, ok := slim.ToString(value)
 	if !ok {
-		return tengo.ErrInvalidIndexValueType
+		return slim.ErrInvalidIndexValueType
 	}
 
 	o.Value[r] = strVal
@@ -2193,7 +2193,7 @@ func (o *StringCircle) IndexSet(index, value tengo.Object) error {
 }
 
 type StringArray struct {
-	tengo.ObjectImpl
+	slim.ObjectImpl
 	Value []string
 }
 
@@ -2203,8 +2203,8 @@ func (o *StringArray) String() string {
 
 func (o *StringArray) BinaryOp(
 	op token.Token,
-	rhs tengo.Object,
-) (tengo.Object, error) {
+	rhs slim.Object,
+) (slim.Object, error) {
 	if rhs, ok := rhs.(*StringArray); ok {
 		switch op {
 		case token.Add:
@@ -2215,14 +2215,14 @@ func (o *StringArray) BinaryOp(
 		}
 	}
 
-	return nil, tengo.ErrInvalidOperator
+	return nil, slim.ErrInvalidOperator
 }
 
 func (o *StringArray) IsFalsy() bool {
 	return len(o.Value) == 0
 }
 
-func (o *StringArray) Equals(x tengo.Object) bool {
+func (o *StringArray) Equals(x slim.Object) bool {
 	if x, ok := x.(*StringArray); ok {
 		if len(o.Value) != len(x.Value) {
 			return false
@@ -2240,7 +2240,7 @@ func (o *StringArray) Equals(x tengo.Object) bool {
 	return false
 }
 
-func (o *StringArray) Copy() tengo.Object {
+func (o *StringArray) Copy() slim.Object {
 	return &StringArray{
 		Value: append([]string{}, o.Value...),
 	}
@@ -2250,59 +2250,59 @@ func (o *StringArray) TypeName() string {
 	return "string-array"
 }
 
-func (o *StringArray) IndexGet(index tengo.Object) (tengo.Object, error) {
-	intIdx, ok := index.(*tengo.Int)
+func (o *StringArray) IndexGet(index slim.Object) (slim.Object, error) {
+	intIdx, ok := index.(*slim.Int)
 	if ok {
 		if intIdx.Value >= 0 && intIdx.Value < int64(len(o.Value)) {
-			return &tengo.String{Value: o.Value[intIdx.Value]}, nil
+			return &slim.String{Value: o.Value[intIdx.Value]}, nil
 		}
 
-		return nil, tengo.ErrIndexOutOfBounds
+		return nil, slim.ErrIndexOutOfBounds
 	}
 
-	strIdx, ok := index.(*tengo.String)
+	strIdx, ok := index.(*slim.String)
 	if ok {
 		for vidx, str := range o.Value {
 			if strIdx.Value == str {
-				return &tengo.Int{Value: int64(vidx)}, nil
+				return &slim.Int{Value: int64(vidx)}, nil
 			}
 		}
 
-		return tengo.UndefinedValue, nil
+		return slim.UndefinedValue, nil
 	}
 
-	return nil, tengo.ErrInvalidIndexType
+	return nil, slim.ErrInvalidIndexType
 }
 
-func (o *StringArray) IndexSet(index, value tengo.Object) error {
-	strVal, ok := tengo.ToString(value)
+func (o *StringArray) IndexSet(index, value slim.Object) error {
+	strVal, ok := slim.ToString(value)
 	if !ok {
-		return tengo.ErrInvalidIndexValueType
+		return slim.ErrInvalidIndexValueType
 	}
 
-	intIdx, ok := index.(*tengo.Int)
+	intIdx, ok := index.(*slim.Int)
 	if ok {
 		if intIdx.Value >= 0 && intIdx.Value < int64(len(o.Value)) {
 			o.Value[intIdx.Value] = strVal
 			return nil
 		}
 
-		return tengo.ErrIndexOutOfBounds
+		return slim.ErrIndexOutOfBounds
 	}
 
-	return tengo.ErrInvalidIndexType
+	return slim.ErrInvalidIndexType
 }
 
 func (o *StringArray) Call(
-	args ...tengo.Object,
-) (ret tengo.Object, err error) {
+	args ...slim.Object,
+) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
 
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -2311,11 +2311,11 @@ func (o *StringArray) Call(
 
 	for i, v := range o.Value {
 		if v == s1 {
-			return &tengo.Int{Value: int64(i)}, nil
+			return &slim.Int{Value: int64(i)}, nil
 		}
 	}
 
-	return tengo.UndefinedValue, nil
+	return slim.UndefinedValue, nil
 }
 
 func (o *StringArray) CanCall() bool {
@@ -2331,7 +2331,7 @@ func TestIndexable(t *testing.T) {
 	expectRun(t, `out = dict["B"]`,
 		Opts().Symbol("dict", dict()).Skip2ndPass(), "bar")
 	expectRun(t, `out = dict["x"]`,
-		Opts().Symbol("dict", dict()).Skip2ndPass(), tengo.UndefinedValue)
+		Opts().Symbol("dict", dict()).Skip2ndPass(), slim.UndefinedValue)
 	expectError(t, `dict[0]`,
 		Opts().Symbol("dict", dict()).Skip2ndPass(), "invalid index type")
 
@@ -2359,7 +2359,7 @@ func TestIndexable(t *testing.T) {
 	expectRun(t, `out = arr["three"]`,
 		Opts().Symbol("arr", strArr()).Skip2ndPass(), 2)
 	expectRun(t, `out = arr["four"]`,
-		Opts().Symbol("arr", strArr()).Skip2ndPass(), tengo.UndefinedValue)
+		Opts().Symbol("arr", strArr()).Skip2ndPass(), slim.UndefinedValue)
 	expectRun(t, `out = arr[0]`,
 		Opts().Symbol("arr", strArr()).Skip2ndPass(), "one")
 	expectRun(t, `out = arr[1]`,
@@ -2432,7 +2432,7 @@ func TestInteger(t *testing.T) {
 }
 
 type StringArrayIterator struct {
-	tengo.ObjectImpl
+	slim.ObjectImpl
 	strArr *StringArray
 	idx    int
 }
@@ -2450,15 +2450,15 @@ func (i *StringArrayIterator) Next() bool {
 	return i.idx <= len(i.strArr.Value)
 }
 
-func (i *StringArrayIterator) Key() tengo.Object {
-	return &tengo.Int{Value: int64(i.idx - 1)}
+func (i *StringArrayIterator) Key() slim.Object {
+	return &slim.Int{Value: int64(i.idx - 1)}
 }
 
-func (i *StringArrayIterator) Value() tengo.Object {
-	return &tengo.String{Value: i.strArr.Value[i.idx-1]}
+func (i *StringArrayIterator) Value() slim.Object {
+	return &slim.String{Value: i.strArr.Value[i.idx-1]}
 }
 
-func (o *StringArray) Iterate() tengo.Iterator {
+func (o *StringArray) Iterate() slim.Iterator {
 	return &StringArrayIterator{
 		strArr: o,
 	}
@@ -2550,9 +2550,9 @@ out = {
 	})
 
 	expectRun(t, `out = {foo: 5}["foo"]`, nil, 5)
-	expectRun(t, `out = {foo: 5}["bar"]`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = {foo: 5}["bar"]`, nil, slim.UndefinedValue)
 	expectRun(t, `key := "foo"; out = {foo: 5}[key]`, nil, 5)
-	expectRun(t, `out = {}["foo"]`, nil, tengo.UndefinedValue)
+	expectRun(t, `out = {}["foo"]`, nil, slim.UndefinedValue)
 
 	expectRun(t, `
 m := {
@@ -2576,13 +2576,13 @@ out = m["foo"](2) + m["foo"](3)
 
 func TestBuiltin(t *testing.T) {
 	m := Opts().Module("math",
-		&tengo.BuiltinModule{
-			Attrs: map[string]tengo.Object{
-				"abs": &tengo.UserFunction{
+		&slim.BuiltinModule{
+			Attrs: map[string]slim.Object{
+				"abs": &slim.UserFunction{
 					Name: "abs",
-					Value: func(a ...tengo.Object) (tengo.Object, error) {
-						v, _ := tengo.ToFloat64(a[0])
-						return &tengo.Float{Value: math.Abs(v)}, nil
+					Value: func(a ...slim.Object) (slim.Object, error) {
+						v, _ := slim.ToFloat64(a[0])
+						return &slim.Float{Value: math.Abs(v)}, nil
 					},
 				},
 			},
@@ -2599,7 +2599,7 @@ func TestUserModules(t *testing.T) {
 	// export none
 	expectRun(t, `out = import("mod1")`,
 		Opts().Module("mod1", `fn := func() { return 5.0 }; a := 2`),
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 
 	// export values
 	expectRun(t, `out = import("mod1")`,
@@ -2744,21 +2744,21 @@ export func(a) {
 
 	// module skipping export
 	expectRun(t, `out = import("mod0")`,
-		Opts().Module("mod0", ``), tengo.UndefinedValue)
+		Opts().Module("mod0", ``), slim.UndefinedValue)
 	expectRun(t, `out = import("mod0")`,
 		Opts().Module("mod0", `if 1 { export true }`), true)
 	expectRun(t, `out = import("mod0")`,
 		Opts().Module("mod0", `if 0 { export true }`),
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	expectRun(t, `out = import("mod0")`,
 		Opts().Module("mod0", `if 1 { } else { export true }`),
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	expectRun(t, `out = import("mod0")`,
 		Opts().Module("mod0", `for v:=0;;v++ { if v == 3 { export true } } }`),
 		true)
 	expectRun(t, `out = import("mod0")`,
 		Opts().Module("mod0", `for v:=0;;v++ { if v == 3 { break } } }`),
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 
 	// duplicate compiled functions
 	// NOTE: module "mod" has a function with some local variable, and it's
@@ -2782,13 +2782,13 @@ export { x: 1 }
 
 func TestModuleBlockScopes(t *testing.T) {
 	m := Opts().Module("rand",
-		&tengo.BuiltinModule{
-			Attrs: map[string]tengo.Object{
-				"intn": &tengo.UserFunction{
+		&slim.BuiltinModule{
+			Attrs: map[string]slim.Object{
+				"intn": &slim.UserFunction{
 					Name: "abs",
-					Value: func(a ...tengo.Object) (tengo.Object, error) {
-						v, _ := tengo.ToInt64(a[0])
-						return &tengo.Int{Value: rand.Int63n(v)}, nil
+					Value: func(a ...slim.Object) (slim.Object, error) {
+						v, _ := slim.ToInt64(a[0])
+						return &slim.Int{Value: rand.Int63n(v)}, nil
 					},
 				},
 			},
@@ -2869,11 +2869,11 @@ f()
 
 func testAllocsLimit(t *testing.T, src string, limit int64) {
 	expectRun(t, src,
-		Opts().Skip2ndPass(), tengo.UndefinedValue) // no limit
+		Opts().Skip2ndPass(), slim.UndefinedValue) // no limit
 	expectRun(t, src,
-		Opts().MaxAllocs(limit).Skip2ndPass(), tengo.UndefinedValue)
+		Opts().MaxAllocs(limit).Skip2ndPass(), slim.UndefinedValue)
 	expectRun(t, src,
-		Opts().MaxAllocs(limit+1).Skip2ndPass(), tengo.UndefinedValue)
+		Opts().MaxAllocs(limit+1).Skip2ndPass(), slim.UndefinedValue)
 	if limit > 1 {
 		expectError(t, src,
 			Opts().MaxAllocs(limit-1).Skip2ndPass(),
@@ -2892,7 +2892,7 @@ func TestReturn(t *testing.T) {
 	expectRun(t, `out = func() { return 2 * 5; return 9 }()`, nil, 10)
 	expectRun(t, `out = func() { 9; return 2 * 5; return 9 }()`, nil, 10)
 	expectRun(t, `
-	out = func() { 
+	out = func() {
 		if (10 > 1) {
 			if (10 > 1) {
 				return 10;
@@ -3011,7 +3011,7 @@ func TestSelector(t *testing.T) {
 	expectRun(t, `a := {k1: 5, k2: "foo"}; out = a.k2`,
 		nil, "foo")
 	expectRun(t, `a := {k1: 5, k2: "foo"}; out = a.k3`,
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	expectRun(t, `
 a := {
@@ -3031,7 +3031,7 @@ a := {
 	},
 	c: "foo bar"
 }
-b := a.x.c`, nil, tengo.UndefinedValue)
+b := a.x.c`, nil, slim.UndefinedValue)
 
 	expectRun(t, `
 a := {
@@ -3041,7 +3041,7 @@ a := {
 	},
 	c: "foo bar"
 }
-b := a.x.y`, nil, tengo.UndefinedValue)
+b := a.x.y`, nil, slim.UndefinedValue)
 
 	expectRun(t, `a := {b: 1, c: "foo"}; a.b = 2; out = a.b`,
 		nil, 2)
@@ -3133,9 +3133,9 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.all({a:true, b:0}, enum.value)`, false)
 	testEnumModule(t, `out = enum.all({a:true, b:0, c:1}, enum.value)`, false)
 	testEnumModule(t, `out = enum.all(0, enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.all("123", enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out = enum.any([], enum.value)`, false)
 	testEnumModule(t, `out = enum.any([1], enum.value)`, true)
@@ -3156,9 +3156,9 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.any({a:false}, enum.value)`, false)
 	testEnumModule(t, `out = enum.any({a:false, b:0}, enum.value)`, false)
 	testEnumModule(t, `out = enum.any(0, enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.any("123", enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out = enum.chunk([], 1)`, ARR{})
 	testEnumModule(t, `out = enum.chunk([1], 1)`, ARR{ARR{1}})
@@ -3173,30 +3173,30 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.chunk([1,2,3,4], 3)`,
 		ARR{ARR{1, 2, 3}, ARR{4}})
 	testEnumModule(t, `out = enum.chunk([], 0)`,
-		tengo.UndefinedValue) // size=0: undefined
+		slim.UndefinedValue) // size=0: undefined
 	testEnumModule(t, `out = enum.chunk([1], 0)`,
-		tengo.UndefinedValue) // size=0: undefined
+		slim.UndefinedValue) // size=0: undefined
 	testEnumModule(t, `out = enum.chunk([1,2,3], 0)`,
-		tengo.UndefinedValue) // size=0: undefined
+		slim.UndefinedValue) // size=0: undefined
 	testEnumModule(t, `out = enum.chunk({a:1,b:2,c:3}, 1)`,
-		tengo.UndefinedValue) // map: undefined
+		slim.UndefinedValue) // map: undefined
 	testEnumModule(t, `out = enum.chunk(0, 1)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.chunk("123", 1)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out = enum.at([], 0)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at([], 1)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at([], -1)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at(["one"], 0)`,
 		"one")
 	testEnumModule(t, `out = enum.at(["one"], 1)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at(["one"], -1)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at(["one","two","three"], 0)`,
 		"one")
 	testEnumModule(t, `out = enum.at(["one","two","three"], 1)`,
@@ -3204,17 +3204,17 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.at(["one","two","three"], 2)`,
 		"three")
 	testEnumModule(t, `out = enum.at(["one","two","three"], -1)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at(["one","two","three"], 3)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at(["one","two","three"], "1")`,
-		tengo.UndefinedValue) // non-int index: undefined
+		slim.UndefinedValue) // non-int index: undefined
 	testEnumModule(t, `out = enum.at({}, "a")`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at({a:"one"}, "a")`,
 		"one")
 	testEnumModule(t, `out = enum.at({a:"one"}, "b")`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at({a:"one",b:"two",c:"three"}, "a")`,
 		"one")
 	testEnumModule(t, `out = enum.at({a:"one",b:"two",c:"three"}, "b")`,
@@ -3222,13 +3222,13 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.at({a:"one",b:"two",c:"three"}, "c")`,
 		"three")
 	testEnumModule(t, `out = enum.at({a:"one",b:"two",c:"three"}, "d")`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.at({a:"one",b:"two",c:"three"}, 'a')`,
-		tengo.UndefinedValue) // non-string index: undefined
+		slim.UndefinedValue) // non-string index: undefined
 	testEnumModule(t, `out = enum.at(0, 1)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.at("abc", 1)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out=0; enum.each([],func(k,v){out+=v})`, 0)
 	testEnumModule(t, `out=0; enum.each([1,2,3],func(k,v){out+=v})`, 6)
@@ -3246,53 +3246,53 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.filter([false,1,0,2], enum.value)`,
 		ARR{1, 2})
 	testEnumModule(t, `out = enum.filter({}, enum.value)`,
-		tengo.UndefinedValue) // non-array: undefined
+		slim.UndefinedValue) // non-array: undefined
 	testEnumModule(t, `out = enum.filter(0, enum.value)`,
-		tengo.UndefinedValue) // non-array: undefined
+		slim.UndefinedValue) // non-array: undefined
 	testEnumModule(t, `out = enum.filter("123", enum.value)`,
-		tengo.UndefinedValue) // non-array: undefined
+		slim.UndefinedValue) // non-array: undefined
 
 	testEnumModule(t, `out = enum.find([], enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find([0], enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find([1], enum.value)`, 1)
 	testEnumModule(t, `out = enum.find([false,0,undefined,1], enum.value)`, 1)
 	testEnumModule(t, `out = enum.find([1,2,3], enum.value)`, 1)
 	testEnumModule(t, `out = enum.find({}, enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find({a:0}, enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find({a:1}, enum.value)`, 1)
 	testEnumModule(t, `out = enum.find({a:false,b:0,c:undefined,d:1}, enum.value)`,
 		1)
 	//testEnumModule(t, `out = enum.find({a:1,b:2,c:3}, enum.value)`, 1)
 	testEnumModule(t, `out = enum.find(0, enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.find("123", enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out = enum.find_key([], enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find_key([0], enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find_key([1], enum.value)`, 0)
 	testEnumModule(t, `out = enum.find_key([false,0,undefined,1], enum.value)`,
 		3)
 	testEnumModule(t, `out = enum.find_key([1,2,3], enum.value)`, 0)
 	testEnumModule(t, `out = enum.find_key({}, enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find_key({a:0}, enum.value)`,
-		tengo.UndefinedValue)
+		slim.UndefinedValue)
 	testEnumModule(t, `out = enum.find_key({a:1}, enum.value)`,
 		"a")
 	testEnumModule(t, `out = enum.find_key({a:false,b:0,c:undefined,d:1}, enum.value)`,
 		"d")
 	//testEnumModule(t, `out = enum.find_key({a:1,b:2,c:3}, enum.value)`, "a")
 	testEnumModule(t, `out = enum.find_key(0, enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.find_key("123", enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 
 	testEnumModule(t, `out = enum.map([], enum.value)`,
 		ARR{})
@@ -3307,9 +3307,9 @@ func TestSourceModules(t *testing.T) {
 	testEnumModule(t, `out = enum.map({a:1}, func(k,v) { return v*2 })`,
 		ARR{2})
 	testEnumModule(t, `out = enum.map(0, enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 	testEnumModule(t, `out = enum.map("123", enum.value)`,
-		tengo.UndefinedValue) // non-enumerable: undefined
+		slim.UndefinedValue) // non-enumerable: undefined
 }
 
 func testEnumModule(t *testing.T, input string, expected interface{}) {
@@ -3321,46 +3321,46 @@ func testEnumModule(t *testing.T, input string, expected interface{}) {
 func TestSrcModEnum(t *testing.T) {
 	expectRun(t, `
 x := import("enum")
-out = x.all([1, 2, 3], func(_, v) { return v >= 1 }) 
+out = x.all([1, 2, 3], func(_, v) { return v >= 1 })
 `, Opts().Stdlib(), true)
 	expectRun(t, `
 x := import("enum")
-out = x.all([1, 2, 3], func(_, v) { return v >= 2 }) 
+out = x.all([1, 2, 3], func(_, v) { return v >= 2 })
 `, Opts().Stdlib(), false)
 
 	expectRun(t, `
 x := import("enum")
-out = x.any([1, 2, 3], func(_, v) { return v >= 1 }) 
+out = x.any([1, 2, 3], func(_, v) { return v >= 1 })
 `, Opts().Stdlib(), true)
 	expectRun(t, `
 x := import("enum")
-out = x.any([1, 2, 3], func(_, v) { return v >= 2 }) 
+out = x.any([1, 2, 3], func(_, v) { return v >= 2 })
 `, Opts().Stdlib(), true)
 
 	expectRun(t, `
 x := import("enum")
-out = x.chunk([1, 2, 3], 1) 
+out = x.chunk([1, 2, 3], 1)
 `, Opts().Stdlib(), ARR{ARR{1}, ARR{2}, ARR{3}})
 	expectRun(t, `
 x := import("enum")
-out = x.chunk([1, 2, 3], 2) 
+out = x.chunk([1, 2, 3], 2)
 `, Opts().Stdlib(), ARR{ARR{1, 2}, ARR{3}})
 	expectRun(t, `
 x := import("enum")
-out = x.chunk([1, 2, 3], 3) 
+out = x.chunk([1, 2, 3], 3)
 `, Opts().Stdlib(), ARR{ARR{1, 2, 3}})
 	expectRun(t, `
 x := import("enum")
-out = x.chunk([1, 2, 3], 4) 
+out = x.chunk([1, 2, 3], 4)
 `, Opts().Stdlib(), ARR{ARR{1, 2, 3}})
 	expectRun(t, `
 x := import("enum")
-out = x.chunk([1, 2, 3, 4, 5, 6], 2) 
+out = x.chunk([1, 2, 3, 4, 5, 6], 2)
 `, Opts().Stdlib(), ARR{ARR{1, 2}, ARR{3, 4}, ARR{5, 6}})
 
 	expectRun(t, `
 x := import("enum")
-out = x.at([1, 2, 3], 0) 
+out = x.at([1, 2, 3], 0)
 `, Opts().Stdlib(), 1)
 }
 
@@ -3403,9 +3403,9 @@ func TestString(t *testing.T) {
 	}
 
 	expectRun(t, fmt.Sprintf("%s[%d]", strStr, -1),
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 	expectRun(t, fmt.Sprintf("%s[%d]", strStr, strLen),
-		nil, tengo.UndefinedValue)
+		nil, slim.UndefinedValue)
 
 	// slice operator
 	for low := 0; low <= strLen; low++ {
@@ -3557,7 +3557,7 @@ iter := func(n, max) {
 	iter(n+1, max)
 }
 iter(0, 9999)
-out = c 
+out = c
 `, nil, 9999)
 }
 
@@ -3651,7 +3651,7 @@ func expectRun(
 	expectedObj := toObject(expected)
 
 	if symbols == nil {
-		symbols = make(map[string]tengo.Object)
+		symbols = make(map[string]slim.Object)
 	}
 	symbols[testOut] = objectZeroCopy(expectedObj)
 
@@ -3679,10 +3679,10 @@ func expectRun(
 
 		expectedObj := toObject(expected)
 		switch eo := expectedObj.(type) {
-		case *tengo.Array:
-			expectedObj = &tengo.ImmutableArray{Value: eo.Value}
-		case *tengo.Map:
-			expectedObj = &tengo.ImmutableMap{Value: eo.Value}
+		case *slim.Array:
+			expectedObj = &slim.ImmutableArray{Value: eo.Value}
+		case *slim.Map:
+			expectedObj = &slim.ImmutableMap{Value: eo.Value}
 		}
 
 		modules.AddSourceModule("__code__",
@@ -3793,11 +3793,11 @@ func (o *vmTracer) Write(p []byte) (n int, err error) {
 
 func traceCompileRun(
 	file *parser.File,
-	symbols map[string]tengo.Object,
-	modules *tengo.ModuleMap,
+	symbols map[string]slim.Object,
+	modules *slim.ModuleMap,
 	maxAllocs int64,
-) (res map[string]tengo.Object, trace []string, err error) {
-	var v *tengo.VM
+) (res map[string]slim.Object, trace []string, err error) {
+	var v *slim.VM
 
 	defer func() {
 		if e := recover(); e != nil {
@@ -3820,9 +3820,9 @@ func traceCompileRun(
 		}
 	}()
 
-	globals := make([]tengo.Object, tengo.GlobalsSize)
+	globals := make([]slim.Object, slim.GlobalsSize)
 
-	symTable := tengo.NewSymbolTable()
+	symTable := slim.NewSymbolTable()
 	for name, value := range symbols {
 		sym := symTable.Define(name)
 
@@ -3831,12 +3831,12 @@ func traceCompileRun(
 		valueCopy := value
 		globals[sym.Index] = valueCopy
 	}
-	for idx, fn := range tengo.GetAllBuiltinFunctions() {
+	for idx, fn := range slim.GetAllBuiltinFunctions() {
 		symTable.DefineBuiltin(idx, fn.Name)
 	}
 
 	tr := &vmTracer{}
-	c := tengo.NewCompiler(file.InputFile, symTable, nil, modules, tr)
+	c := slim.NewCompiler(file.InputFile, symTable, nil, modules, tr)
 	err = c.Compile(file)
 	trace = append(trace,
 		fmt.Sprintf("\n[Compiler Trace]\n\n%s",
@@ -3852,11 +3852,11 @@ func traceCompileRun(
 	trace = append(trace, fmt.Sprintf("\n[Compiled Instructions]\n\n%s\n",
 		strings.Join(bytecode.FormatInstructions(), "\n")))
 
-	v = tengo.NewVM(bytecode, globals, maxAllocs)
+	v = slim.NewVM(bytecode, globals, maxAllocs)
 
 	err = v.Run()
 	{
-		res = make(map[string]tengo.Object)
+		res = make(map[string]slim.Object)
 		for name := range symbols {
 			sym, depth, ok := symTable.Resolve(name, false)
 			if !ok || depth != 0 {
@@ -3876,7 +3876,7 @@ func traceCompileRun(
 	return
 }
 
-func formatGlobals(globals []tengo.Object) (formatted []string) {
+func formatGlobals(globals []slim.Object) (formatted []string) {
 	for idx, global := range globals {
 		if global == nil {
 			return
@@ -3897,92 +3897,92 @@ func parse(t *testing.T, input string) *parser.File {
 	return file
 }
 
-func errorObject(v interface{}) *tengo.Error {
-	return &tengo.Error{Value: toObject(v)}
+func errorObject(v interface{}) *slim.Error {
+	return &slim.Error{Value: toObject(v)}
 }
 
-func toObject(v interface{}) tengo.Object {
+func toObject(v interface{}) slim.Object {
 	switch v := v.(type) {
-	case tengo.Object:
+	case slim.Object:
 		return v
 	case string:
-		return &tengo.String{Value: v}
+		return &slim.String{Value: v}
 	case int64:
-		return &tengo.Int{Value: v}
+		return &slim.Int{Value: v}
 	case int: // for convenience
-		return &tengo.Int{Value: int64(v)}
+		return &slim.Int{Value: int64(v)}
 	case bool:
 		if v {
-			return tengo.TrueValue
+			return slim.TrueValue
 		}
-		return tengo.FalseValue
+		return slim.FalseValue
 	case rune:
-		return &tengo.Char{Value: v}
+		return &slim.Char{Value: v}
 	case byte: // for convenience
-		return &tengo.Char{Value: rune(v)}
+		return &slim.Char{Value: rune(v)}
 	case float64:
-		return &tengo.Float{Value: v}
+		return &slim.Float{Value: v}
 	case []byte:
-		return &tengo.Bytes{Value: v}
+		return &slim.Bytes{Value: v}
 	case MAP:
-		objs := make(map[string]tengo.Object)
+		objs := make(map[string]slim.Object)
 		for k, v := range v {
 			objs[k] = toObject(v)
 		}
 
-		return &tengo.Map{Value: objs}
+		return &slim.Map{Value: objs}
 	case ARR:
-		var objs []tengo.Object
+		var objs []slim.Object
 		for _, e := range v {
 			objs = append(objs, toObject(e))
 		}
 
-		return &tengo.Array{Value: objs}
+		return &slim.Array{Value: objs}
 	case IMAP:
-		objs := make(map[string]tengo.Object)
+		objs := make(map[string]slim.Object)
 		for k, v := range v {
 			objs[k] = toObject(v)
 		}
 
-		return &tengo.ImmutableMap{Value: objs}
+		return &slim.ImmutableMap{Value: objs}
 	case IARR:
-		var objs []tengo.Object
+		var objs []slim.Object
 		for _, e := range v {
 			objs = append(objs, toObject(e))
 		}
 
-		return &tengo.ImmutableArray{Value: objs}
+		return &slim.ImmutableArray{Value: objs}
 	}
 
 	panic(fmt.Errorf("unknown type: %T", v))
 }
 
-func objectZeroCopy(o tengo.Object) tengo.Object {
+func objectZeroCopy(o slim.Object) slim.Object {
 	switch o.(type) {
-	case *tengo.Int:
-		return &tengo.Int{}
-	case *tengo.Float:
-		return &tengo.Float{}
-	case *tengo.Bool:
-		return &tengo.Bool{}
-	case *tengo.Char:
-		return &tengo.Char{}
-	case *tengo.String:
-		return &tengo.String{}
-	case *tengo.Array:
-		return &tengo.Array{}
-	case *tengo.Map:
-		return &tengo.Map{}
-	case *tengo.Undefined:
-		return tengo.UndefinedValue
-	case *tengo.Error:
-		return &tengo.Error{}
-	case *tengo.Bytes:
-		return &tengo.Bytes{}
-	case *tengo.ImmutableArray:
-		return &tengo.ImmutableArray{}
-	case *tengo.ImmutableMap:
-		return &tengo.ImmutableMap{}
+	case *slim.Int:
+		return &slim.Int{}
+	case *slim.Float:
+		return &slim.Float{}
+	case *slim.Bool:
+		return &slim.Bool{}
+	case *slim.Char:
+		return &slim.Char{}
+	case *slim.String:
+		return &slim.String{}
+	case *slim.Array:
+		return &slim.Array{}
+	case *slim.Map:
+		return &slim.Map{}
+	case *slim.Undefined:
+		return slim.UndefinedValue
+	case *slim.Error:
+		return &slim.Error{}
+	case *slim.Bytes:
+		return &slim.Bytes{}
+	case *slim.ImmutableArray:
+		return &slim.ImmutableArray{}
+	case *slim.ImmutableMap:
+		return &slim.ImmutableMap{}
 	case nil:
 		panic("nil")
 	default:

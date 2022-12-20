@@ -1,16 +1,16 @@
-package tengo_test
+package slim_test
 
 import (
 	"errors"
 	"reflect"
 	"testing"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
 func Test_builtinDelete(t *testing.T) {
-	var builtinDelete func(args ...tengo.Object) (tengo.Object, error)
-	for _, f := range tengo.GetAllBuiltinFunctions() {
+	var builtinDelete func(args ...slim.Object) (slim.Object, error)
+	for _, f := range slim.GetAllBuiltinFunctions() {
 		if f.Name == "delete" {
 			builtinDelete = f.Value
 			break
@@ -20,80 +20,80 @@ func Test_builtinDelete(t *testing.T) {
 		t.Fatal("builtin delete not found")
 	}
 	type args struct {
-		args []tengo.Object
+		args []slim.Object
 	}
 	tests := []struct {
 		name      string
 		args      args
-		want      tengo.Object
+		want      slim.Object
 		wantErr   bool
 		wantedErr error
 		target    interface{}
 	}{
-		{name: "invalid-arg", args: args{[]tengo.Object{&tengo.String{},
-			&tengo.String{}}}, wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+		{name: "invalid-arg", args: args{[]slim.Object{&slim.String{},
+			&slim.String{}}}, wantErr: true,
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name:     "first",
 				Expected: "map",
 				Found:    "string"},
 		},
 		{name: "no-args",
-			wantErr: true, wantedErr: tengo.ErrWrongNumArguments},
-		{name: "empty-args", args: args{[]tengo.Object{}}, wantErr: true,
-			wantedErr: tengo.ErrWrongNumArguments,
+			wantErr: true, wantedErr: slim.ErrWrongNumArguments},
+		{name: "empty-args", args: args{[]slim.Object{}}, wantErr: true,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
-		{name: "3-args", args: args{[]tengo.Object{
-			(*tengo.Map)(nil), (*tengo.String)(nil), (*tengo.String)(nil)}},
-			wantErr: true, wantedErr: tengo.ErrWrongNumArguments,
+		{name: "3-args", args: args{[]slim.Object{
+			(*slim.Map)(nil), (*slim.String)(nil), (*slim.String)(nil)}},
+			wantErr: true, wantedErr: slim.ErrWrongNumArguments,
 		},
 		{name: "nil-map-empty-key",
-			args: args{[]tengo.Object{&tengo.Map{}, &tengo.String{}}},
-			want: tengo.UndefinedValue,
+			args: args{[]slim.Object{&slim.Map{}, &slim.String{}}},
+			want: slim.UndefinedValue,
 		},
 		{name: "nil-map-nonstr-key",
-			args: args{[]tengo.Object{
-				&tengo.Map{}, &tengo.Int{}}}, wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			args: args{[]slim.Object{
+				&slim.Map{}, &slim.Int{}}}, wantErr: true,
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "second", Expected: "string", Found: "int"},
 		},
 		{name: "nil-map-no-key",
-			args: args{[]tengo.Object{&tengo.Map{}}}, wantErr: true,
-			wantedErr: tengo.ErrWrongNumArguments,
+			args: args{[]slim.Object{&slim.Map{}}}, wantErr: true,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
 		{name: "map-missing-key",
 			args: args{
-				[]tengo.Object{
-					&tengo.Map{Value: map[string]tengo.Object{
-						"key": &tengo.String{Value: "value"},
+				[]slim.Object{
+					&slim.Map{Value: map[string]slim.Object{
+						"key": &slim.String{Value: "value"},
 					}},
-					&tengo.String{Value: "key1"}}},
-			want: tengo.UndefinedValue,
-			target: &tengo.Map{
-				Value: map[string]tengo.Object{
-					"key": &tengo.String{
+					&slim.String{Value: "key1"}}},
+			want: slim.UndefinedValue,
+			target: &slim.Map{
+				Value: map[string]slim.Object{
+					"key": &slim.String{
 						Value: "value"}}},
 		},
 		{name: "map-emptied",
 			args: args{
-				[]tengo.Object{
-					&tengo.Map{Value: map[string]tengo.Object{
-						"key": &tengo.String{Value: "value"},
+				[]slim.Object{
+					&slim.Map{Value: map[string]slim.Object{
+						"key": &slim.String{Value: "value"},
 					}},
-					&tengo.String{Value: "key"}}},
-			want:   tengo.UndefinedValue,
-			target: &tengo.Map{Value: map[string]tengo.Object{}},
+					&slim.String{Value: "key"}}},
+			want:   slim.UndefinedValue,
+			target: &slim.Map{Value: map[string]slim.Object{}},
 		},
 		{name: "map-multi-keys",
 			args: args{
-				[]tengo.Object{
-					&tengo.Map{Value: map[string]tengo.Object{
-						"key1": &tengo.String{Value: "value1"},
-						"key2": &tengo.Int{Value: 10},
+				[]slim.Object{
+					&slim.Map{Value: map[string]slim.Object{
+						"key1": &slim.String{Value: "value1"},
+						"key2": &slim.Int{Value: 10},
 					}},
-					&tengo.String{Value: "key1"}}},
-			want: tengo.UndefinedValue,
-			target: &tengo.Map{Value: map[string]tengo.Object{
-				"key2": &tengo.Int{Value: 10}}},
+					&slim.String{Value: "key1"}}},
+			want: slim.UndefinedValue,
+			target: &slim.Map{Value: map[string]slim.Object{
+				"key2": &slim.Int{Value: 10}}},
 		},
 	}
 	for _, tt := range tests {
@@ -117,7 +117,7 @@ func Test_builtinDelete(t *testing.T) {
 			}
 			if !tt.wantErr && tt.target != nil {
 				switch v := tt.args.args[0].(type) {
-				case *tengo.Map, *tengo.Array:
+				case *slim.Map, *slim.Array:
 					if !reflect.DeepEqual(tt.target, tt.args.args[0]) {
 						t.Errorf("builtinDelete() objects are not equal "+
 							"got: %+v, want: %+v", tt.args.args[0], tt.target)
@@ -133,8 +133,8 @@ func Test_builtinDelete(t *testing.T) {
 }
 
 func Test_builtinSplice(t *testing.T) {
-	var builtinSplice func(args ...tengo.Object) (tengo.Object, error)
-	for _, f := range tengo.GetAllBuiltinFunctions() {
+	var builtinSplice func(args ...slim.Object) (slim.Object, error)
+	for _, f := range slim.GetAllBuiltinFunctions() {
 		if f.Name == "splice" {
 			builtinSplice = f.Value
 			break
@@ -145,188 +145,188 @@ func Test_builtinSplice(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		args      []tengo.Object
-		deleted   tengo.Object
-		Array     *tengo.Array
+		args      []slim.Object
+		deleted   slim.Object
+		Array     *slim.Array
 		wantErr   bool
 		wantedErr error
 	}{
-		{name: "no args", args: []tengo.Object{}, wantErr: true,
-			wantedErr: tengo.ErrWrongNumArguments,
+		{name: "no args", args: []slim.Object{}, wantErr: true,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
-		{name: "invalid args", args: []tengo.Object{&tengo.Map{}},
+		{name: "invalid args", args: []slim.Object{&slim.Map{}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "first", Expected: "array", Found: "map"},
 		},
 		{name: "invalid args",
-			args:    []tengo.Object{&tengo.Array{}, &tengo.String{}},
+			args:    []slim.Object{&slim.Array{}, &slim.String{}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "second", Expected: "int", Found: "string"},
 		},
 		{name: "negative index",
-			args:      []tengo.Object{&tengo.Array{}, &tengo.Int{Value: -1}},
+			args:      []slim.Object{&slim.Array{}, &slim.Int{Value: -1}},
 			wantErr:   true,
-			wantedErr: tengo.ErrIndexOutOfBounds},
+			wantedErr: slim.ErrIndexOutOfBounds},
 		{name: "non int count",
-			args: []tengo.Object{
-				&tengo.Array{}, &tengo.Int{Value: 0},
-				&tengo.String{Value: ""}},
+			args: []slim.Object{
+				&slim.Array{}, &slim.Int{Value: 0},
+				&slim.String{Value: ""}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "third", Expected: "int", Found: "string"},
 		},
 		{name: "negative count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: -1}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 0},
+				&slim.Int{Value: -1}},
 			wantErr:   true,
-			wantedErr: tengo.ErrIndexOutOfBounds,
+			wantedErr: slim.ErrIndexOutOfBounds,
 		},
 		{name: "insert with zero count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "b"}},
-			deleted: &tengo.Array{Value: []tengo.Object{}},
-			Array: &tengo.Array{Value: []tengo.Object{
-				&tengo.String{Value: "b"},
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 0},
+				&slim.String{Value: "b"}},
+			deleted: &slim.Array{Value: []slim.Object{}},
+			Array: &slim.Array{Value: []slim.Object{
+				&slim.String{Value: "b"},
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
 		},
 		{name: "insert",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"}},
-			deleted: &tengo.Array{Value: []tengo.Object{}},
-			Array: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 0},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"}},
+			deleted: &slim.Array{Value: []slim.Object{}},
+			Array: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
 		},
 		{name: "insert with zero count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"}},
-			deleted: &tengo.Array{Value: []tengo.Object{}},
-			Array: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 0},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"}},
+			deleted: &slim.Array{Value: []slim.Object{}},
+			Array: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
 		},
 		{name: "insert with delete",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 1},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"}},
-			deleted: &tengo.Array{
-				Value: []tengo.Object{&tengo.Int{Value: 1}}},
-			Array: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"},
-				&tengo.Int{Value: 2}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 1},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"}},
+			deleted: &slim.Array{
+				Value: []slim.Object{&slim.Int{Value: 1}}},
+			Array: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"},
+				&slim.Int{Value: 2}}},
 		},
 		{name: "insert with delete multi",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2},
-				&tengo.String{Value: "c"},
-				&tengo.String{Value: "d"}},
-			deleted: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
-			Array: &tengo.Array{
-				Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.String{Value: "c"},
-					&tengo.String{Value: "d"}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2},
+				&slim.String{Value: "c"},
+				&slim.String{Value: "d"}},
+			deleted: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
+			Array: &slim.Array{
+				Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.String{Value: "c"},
+					&slim.String{Value: "d"}}},
 		},
 		{name: "delete all with positive count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 3}},
-			deleted: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
-			Array: &tengo.Array{Value: []tengo.Object{}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 3}},
+			deleted: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
+			Array: &slim.Array{Value: []slim.Object{}},
 		},
 		{name: "delete all with big count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 5}},
-			deleted: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
-			Array: &tengo.Array{Value: []tengo.Object{}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 5}},
+			deleted: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
+			Array: &slim.Array{Value: []slim.Object{}},
 		},
 		{name: "nothing2",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}}},
-			Array: &tengo.Array{Value: []tengo.Object{}},
-			deleted: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}}},
+			Array: &slim.Array{Value: []slim.Object{}},
+			deleted: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2}}},
 		},
 		{name: "pop without count",
-			args: []tengo.Object{
-				&tengo.Array{Value: []tengo.Object{
-					&tengo.Int{Value: 0},
-					&tengo.Int{Value: 1},
-					&tengo.Int{Value: 2}}},
-				&tengo.Int{Value: 2}},
-			deleted: &tengo.Array{Value: []tengo.Object{&tengo.Int{Value: 2}}},
-			Array: &tengo.Array{Value: []tengo.Object{
-				&tengo.Int{Value: 0}, &tengo.Int{Value: 1}}},
+			args: []slim.Object{
+				&slim.Array{Value: []slim.Object{
+					&slim.Int{Value: 0},
+					&slim.Int{Value: 1},
+					&slim.Int{Value: 2}}},
+				&slim.Int{Value: 2}},
+			deleted: &slim.Array{Value: []slim.Object{&slim.Int{Value: 2}}},
+			Array: &slim.Array{Value: []slim.Object{
+				&slim.Int{Value: 0}, &slim.Int{Value: 1}}},
 		},
 	}
 	for _, tt := range tests {
@@ -346,15 +346,15 @@ func Test_builtinSplice(t *testing.T) {
 			}
 			if tt.Array != nil && !reflect.DeepEqual(tt.Array, tt.args[0]) {
 				t.Errorf("builtinSplice() arrays are not equal expected"+
-					" %s, got %s", tt.Array, tt.args[0].(*tengo.Array))
+					" %s, got %s", tt.Array, tt.args[0].(*slim.Array))
 			}
 		})
 	}
 }
 
 func Test_builtinRange(t *testing.T) {
-	var builtinRange func(args ...tengo.Object) (tengo.Object, error)
-	for _, f := range tengo.GetAllBuiltinFunctions() {
+	var builtinRange func(args ...slim.Object) (slim.Object, error)
+	for _, f := range slim.GetAllBuiltinFunctions() {
 		if f.Name == "range" {
 			builtinRange = f.Value
 			break
@@ -365,62 +365,62 @@ func Test_builtinRange(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		args      []tengo.Object
-		result    *tengo.Array
+		args      []slim.Object
+		result    *slim.Array
 		wantErr   bool
 		wantedErr error
 	}{
-		{name: "no args", args: []tengo.Object{}, wantErr: true,
-			wantedErr: tengo.ErrWrongNumArguments,
+		{name: "no args", args: []slim.Object{}, wantErr: true,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
-		{name: "single args", args: []tengo.Object{&tengo.Map{}},
+		{name: "single args", args: []slim.Object{&slim.Map{}},
 			wantErr:   true,
-			wantedErr: tengo.ErrWrongNumArguments,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
-		{name: "4 args", args: []tengo.Object{&tengo.Map{}, &tengo.String{}, &tengo.String{}, &tengo.String{}},
+		{name: "4 args", args: []slim.Object{&slim.Map{}, &slim.String{}, &slim.String{}, &slim.String{}},
 			wantErr:   true,
-			wantedErr: tengo.ErrWrongNumArguments,
+			wantedErr: slim.ErrWrongNumArguments,
 		},
 		{name: "invalid start",
-			args:    []tengo.Object{&tengo.String{}, &tengo.String{}},
+			args:    []slim.Object{&slim.String{}, &slim.String{}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "start", Expected: "int", Found: "string"},
 		},
 		{name: "invalid stop",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.String{}},
+			args:    []slim.Object{&slim.Int{}, &slim.String{}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "stop", Expected: "int", Found: "string"},
 		},
 		{name: "invalid step",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{}, &tengo.String{}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{}, &slim.String{}},
 			wantErr: true,
-			wantedErr: tengo.ErrInvalidArgumentType{
+			wantedErr: slim.ErrInvalidArgumentType{
 				Name: "step", Expected: "int", Found: "string"},
 		},
 		{name: "zero step",
-			args:      []tengo.Object{&tengo.Int{}, &tengo.Int{}, &tengo.Int{}}, //must greate than 0
+			args:      []slim.Object{&slim.Int{}, &slim.Int{}, &slim.Int{}}, //must greate than 0
 			wantErr:   true,
-			wantedErr: tengo.ErrInvalidRangeStep,
+			wantedErr: slim.ErrInvalidRangeStep,
 		},
 		{name: "negative step",
-			args:      []tengo.Object{&tengo.Int{}, &tengo.Int{}, intObject(-2)}, //must greate than 0
+			args:      []slim.Object{&slim.Int{}, &slim.Int{}, intObject(-2)}, //must greate than 0
 			wantErr:   true,
-			wantedErr: tengo.ErrInvalidRangeStep,
+			wantedErr: slim.ErrInvalidRangeStep,
 		},
 		{name: "same bound",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{}},
 			wantErr: false,
-			result: &tengo.Array{
+			result: &slim.Array{
 				Value: nil,
 			},
 		},
 		{name: "positive range",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{Value: 5}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{Value: 5}},
 			wantErr: false,
-			result: &tengo.Array{
-				Value: []tengo.Object{
+			result: &slim.Array{
+				Value: []slim.Object{
 					intObject(0),
 					intObject(1),
 					intObject(2),
@@ -430,10 +430,10 @@ func Test_builtinRange(t *testing.T) {
 			},
 		},
 		{name: "negative range",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{Value: -5}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{Value: -5}},
 			wantErr: false,
-			result: &tengo.Array{
-				Value: []tengo.Object{
+			result: &slim.Array{
+				Value: []slim.Object{
 					intObject(0),
 					intObject(-1),
 					intObject(-2),
@@ -444,10 +444,10 @@ func Test_builtinRange(t *testing.T) {
 		},
 
 		{name: "positive with step",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{Value: 5}, &tengo.Int{Value: 2}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{Value: 5}, &slim.Int{Value: 2}},
 			wantErr: false,
-			result: &tengo.Array{
-				Value: []tengo.Object{
+			result: &slim.Array{
+				Value: []slim.Object{
 					intObject(0),
 					intObject(2),
 					intObject(4),
@@ -456,10 +456,10 @@ func Test_builtinRange(t *testing.T) {
 		},
 
 		{name: "negative with step",
-			args:    []tengo.Object{&tengo.Int{}, &tengo.Int{Value: -10}, &tengo.Int{Value: 2}},
+			args:    []slim.Object{&slim.Int{}, &slim.Int{Value: -10}, &slim.Int{Value: 2}},
 			wantErr: false,
-			result: &tengo.Array{
-				Value: []tengo.Object{
+			result: &slim.Array{
+				Value: []slim.Object{
 					intObject(0),
 					intObject(-2),
 					intObject(-4),
@@ -470,10 +470,10 @@ func Test_builtinRange(t *testing.T) {
 		},
 
 		{name: "large range",
-			args:    []tengo.Object{intObject(-10), intObject(10), &tengo.Int{Value: 3}},
+			args:    []slim.Object{intObject(-10), intObject(10), &slim.Int{Value: 3}},
 			wantErr: false,
-			result: &tengo.Array{
-				Value: []tengo.Object{
+			result: &slim.Array{
+				Value: []slim.Object{
 					intObject(-10),
 					intObject(-7),
 					intObject(-4),
@@ -499,7 +499,7 @@ func Test_builtinRange(t *testing.T) {
 			}
 			if tt.result != nil && !reflect.DeepEqual(tt.result, got) {
 				t.Errorf("builtinRange() arrays are not equal expected"+
-					" %s, got %s", tt.result, got.(*tengo.Array))
+					" %s, got %s", tt.result, got.(*slim.Array))
 			}
 		})
 	}

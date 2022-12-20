@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 import (
 	"encoding/gob"
@@ -6,7 +6,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/d5/tengo/v2/parser"
+	"github.com/snple/slim/parser"
 )
 
 // Bytecode is a compiled instructions and constants.

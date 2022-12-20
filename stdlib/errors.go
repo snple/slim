@@ -1,12 +1,10 @@
 package stdlib
 
-import (
-	"github.com/d5/tengo/v2"
-)
+import "github.com/snple/slim"
 
-func wrapError(err error) tengo.Object {
+func wrapError(err error) slim.Object {
 	if err == nil {
-		return tengo.TrueValue
+		return slim.TrueValue
 	}
-	return &tengo.Error{Value: &tengo.String{Value: err.Error()}}
+	return &slim.Error{Value: &slim.String{Value: err.Error()}}
 }

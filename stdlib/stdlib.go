@@ -1,10 +1,8 @@
 package stdlib
 
-//go:generate go run gensrcmods.go
+import "github.com/snple/slim"
 
-import (
-	"github.com/d5/tengo/v2"
-)
+//go:generate go run gensrcmods.go
 
 // AllModuleNames returns a list of all default module names.
 func AllModuleNames() []string {
@@ -20,8 +18,8 @@ func AllModuleNames() []string {
 
 // GetModuleMap returns the module map that includes all modules
 // for the given module names.
-func GetModuleMap(names ...string) *tengo.ModuleMap {
-	modules := tengo.NewModuleMap()
+func GetModuleMap(names ...string) *slim.ModuleMap {
+	modules := slim.NewModuleMap()
 	for _, name := range names {
 		if mod := BuiltinModules[name]; mod != nil {
 			modules.AddBuiltinModule(name, mod)

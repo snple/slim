@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
 // safeSet holds the value true if the ASCII character with the given array
@@ -125,11 +125,11 @@ var safeSet = [utf8.RuneSelf]bool{
 var hex = "0123456789abcdef"
 
 // Encode returns the JSON encoding of the object.
-func Encode(o tengo.Object) ([]byte, error) {
+func Encode(o slim.Object) ([]byte, error) {
 	var b []byte
 
 	switch o := o.(type) {
-	case *tengo.Array:
+	case *slim.Array:
 		b = append(b, '[')
 		len1 := len(o.Value) - 1
 		for idx, elem := range o.Value {
@@ -143,7 +143,7 @@ func Encode(o tengo.Object) ([]byte, error) {
 			}
 		}
 		b = append(b, ']')
-	case *tengo.ImmutableArray:
+	case *slim.ImmutableArray:
 		b = append(b, '[')
 		len1 := len(o.Value) - 1
 		for idx, elem := range o.Value {
@@ -157,7 +157,7 @@ func Encode(o tengo.Object) ([]byte, error) {
 			}
 		}
 		b = append(b, ']')
-	case *tengo.Map:
+	case *slim.Map:
 		b = append(b, '{')
 		len1 := len(o.Value) - 1
 		idx := 0
@@ -175,7 +175,7 @@ func Encode(o tengo.Object) ([]byte, error) {
 			idx++
 		}
 		b = append(b, '}')
-	case *tengo.ImmutableMap:
+	case *slim.ImmutableMap:
 		b = append(b, '{')
 		len1 := len(o.Value) - 1
 		idx := 0
@@ -193,22 +193,22 @@ func Encode(o tengo.Object) ([]byte, error) {
 			idx++
 		}
 		b = append(b, '}')
-	case *tengo.Bool:
+	case *slim.Bool:
 		if o.IsFalsy() {
 			b = strconv.AppendBool(b, false)
 		} else {
 			b = strconv.AppendBool(b, true)
 		}
-	case *tengo.Bytes:
+	case *slim.Bytes:
 		b = append(b, '"')
 		encodedLen := base64.StdEncoding.EncodedLen(len(o.Value))
 		dst := make([]byte, encodedLen)
 		base64.StdEncoding.Encode(dst, o.Value)
 		b = append(b, dst...)
 		b = append(b, '"')
-	case *tengo.Char:
+	case *slim.Char:
 		b = strconv.AppendInt(b, int64(o.Value), 10)
-	case *tengo.Float:
+	case *slim.Float:
 		var y []byte
 
 		f := o.Value
@@ -236,19 +236,19 @@ func Encode(o tengo.Object) ([]byte, error) {
 		}
 
 		b = append(b, y...)
-	case *tengo.Int:
+	case *slim.Int:
 		b = strconv.AppendInt(b, o.Value, 10)
-	case *tengo.String:
+	case *slim.String:
 		// string encoding bug is fixed with newly introduced function
-		// encodeString(). See: https://github.com/d5/tengo/issues/268
+		// encodeString(). See: https://github.com/snple/slim/issues/268
 		b = encodeString(b, o.Value)
-	case *tengo.Time:
+	case *slim.Time:
 		y, err := o.Value.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
 		b = append(b, y...)
-	case *tengo.Undefined:
+	case *slim.Undefined:
 		b = append(b, "null"...)
 	default:
 		// unknown type: ignore

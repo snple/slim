@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/parser"
+	"github.com/snple/slim"
+	"github.com/snple/slim/parser"
 )
 
 func main() {
@@ -36,9 +36,9 @@ fib := func(x) {
 		panic(err)
 	}
 
-	if nativeResult != int(result.(*tengo.Int).Value) {
+	if nativeResult != int(result.(*slim.Int).Value) {
 		panic(fmt.Errorf("wrong result: %d != %d", nativeResult,
-			int(result.(*tengo.Int).Value)))
+			int(result.(*slim.Int).Value)))
 	}
 
 	fmt.Println("-------------------------------------")
@@ -73,9 +73,9 @@ fib := func(x, s) {
 		panic(err)
 	}
 
-	if nativeResult != int(result.(*tengo.Int).Value) {
+	if nativeResult != int(result.(*slim.Int).Value) {
 		panic(fmt.Errorf("wrong result: %d != %d", nativeResult,
-			int(result.(*tengo.Int).Value)))
+			int(result.(*slim.Int).Value)))
 	}
 
 	fmt.Println("-------------------------------------")
@@ -110,9 +110,9 @@ fib := func(x, a, b) {
 		panic(err)
 	}
 
-	if nativeResult != int(result.(*tengo.Int).Value) {
+	if nativeResult != int(result.(*slim.Int).Value) {
 		panic(fmt.Errorf("wrong result: %d != %d", nativeResult,
-			int(result.(*tengo.Int).Value)))
+			int(result.(*slim.Int).Value)))
 	}
 
 	fmt.Println("-------------------------------------")
@@ -160,7 +160,7 @@ func runBench(
 	parseTime time.Duration,
 	compileTime time.Duration,
 	runTime time.Duration,
-	result tengo.Object,
+	result slim.Object,
 	err error,
 ) {
 	var astFile *parser.File
@@ -169,7 +169,7 @@ func runBench(
 		return
 	}
 
-	var bytecode *tengo.Bytecode
+	var bytecode *slim.Bytecode
 	compileTime, bytecode, err = compileFile(astFile)
 	if err != nil {
 		return
@@ -195,13 +195,13 @@ func parse(input []byte) (time.Duration, *parser.File, error) {
 	return time.Since(start), file, nil
 }
 
-func compileFile(file *parser.File) (time.Duration, *tengo.Bytecode, error) {
-	symTable := tengo.NewSymbolTable()
+func compileFile(file *parser.File) (time.Duration, *slim.Bytecode, error) {
+	symTable := slim.NewSymbolTable()
 	symTable.Define("out")
 
 	start := time.Now()
 
-	c := tengo.NewCompiler(file.InputFile, symTable, nil, nil, nil)
+	c := slim.NewCompiler(file.InputFile, symTable, nil, nil, nil)
 	if err := c.Compile(file); err != nil {
 		return time.Since(start), nil, err
 	}
@@ -213,13 +213,13 @@ func compileFile(file *parser.File) (time.Duration, *tengo.Bytecode, error) {
 }
 
 func runVM(
-	bytecode *tengo.Bytecode,
-) (time.Duration, tengo.Object, error) {
-	globals := make([]tengo.Object, tengo.GlobalsSize)
+	bytecode *slim.Bytecode,
+) (time.Duration, slim.Object, error) {
+	globals := make([]slim.Object, slim.GlobalsSize)
 
 	start := time.Now()
 
-	v := tengo.NewVM(bytecode, globals, -1)
+	v := slim.NewVM(bytecode, globals, -1)
 	if err := v.Run(); err != nil {
 		return time.Since(start), nil, err
 	}

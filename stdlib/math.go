@@ -3,230 +3,230 @@ package stdlib
 import (
 	"math"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-var mathModule = map[string]tengo.Object{
-	"e":       &tengo.Float{Value: math.E},
-	"pi":      &tengo.Float{Value: math.Pi},
-	"phi":     &tengo.Float{Value: math.Phi},
-	"sqrt2":   &tengo.Float{Value: math.Sqrt2},
-	"sqrtE":   &tengo.Float{Value: math.SqrtE},
-	"sqrtPi":  &tengo.Float{Value: math.SqrtPi},
-	"sqrtPhi": &tengo.Float{Value: math.SqrtPhi},
-	"ln2":     &tengo.Float{Value: math.Ln2},
-	"log2E":   &tengo.Float{Value: math.Log2E},
-	"ln10":    &tengo.Float{Value: math.Ln10},
-	"log10E":  &tengo.Float{Value: math.Log10E},
-	"abs": &tengo.UserFunction{
+var mathModule = map[string]slim.Object{
+	"e":       &slim.Float{Value: math.E},
+	"pi":      &slim.Float{Value: math.Pi},
+	"phi":     &slim.Float{Value: math.Phi},
+	"sqrt2":   &slim.Float{Value: math.Sqrt2},
+	"sqrtE":   &slim.Float{Value: math.SqrtE},
+	"sqrtPi":  &slim.Float{Value: math.SqrtPi},
+	"sqrtPhi": &slim.Float{Value: math.SqrtPhi},
+	"ln2":     &slim.Float{Value: math.Ln2},
+	"log2E":   &slim.Float{Value: math.Log2E},
+	"ln10":    &slim.Float{Value: math.Ln10},
+	"log10E":  &slim.Float{Value: math.Log10E},
+	"abs": &slim.UserFunction{
 		Name:  "abs",
 		Value: FuncAFRF(math.Abs),
 	},
-	"acos": &tengo.UserFunction{
+	"acos": &slim.UserFunction{
 		Name:  "acos",
 		Value: FuncAFRF(math.Acos),
 	},
-	"acosh": &tengo.UserFunction{
+	"acosh": &slim.UserFunction{
 		Name:  "acosh",
 		Value: FuncAFRF(math.Acosh),
 	},
-	"asin": &tengo.UserFunction{
+	"asin": &slim.UserFunction{
 		Name:  "asin",
 		Value: FuncAFRF(math.Asin),
 	},
-	"asinh": &tengo.UserFunction{
+	"asinh": &slim.UserFunction{
 		Name:  "asinh",
 		Value: FuncAFRF(math.Asinh),
 	},
-	"atan": &tengo.UserFunction{
+	"atan": &slim.UserFunction{
 		Name:  "atan",
 		Value: FuncAFRF(math.Atan),
 	},
-	"atan2": &tengo.UserFunction{
+	"atan2": &slim.UserFunction{
 		Name:  "atan2",
 		Value: FuncAFFRF(math.Atan2),
 	},
-	"atanh": &tengo.UserFunction{
+	"atanh": &slim.UserFunction{
 		Name:  "atanh",
 		Value: FuncAFRF(math.Atanh),
 	},
-	"cbrt": &tengo.UserFunction{
+	"cbrt": &slim.UserFunction{
 		Name:  "cbrt",
 		Value: FuncAFRF(math.Cbrt),
 	},
-	"ceil": &tengo.UserFunction{
+	"ceil": &slim.UserFunction{
 		Name:  "ceil",
 		Value: FuncAFRF(math.Ceil),
 	},
-	"copysign": &tengo.UserFunction{
+	"copysign": &slim.UserFunction{
 		Name:  "copysign",
 		Value: FuncAFFRF(math.Copysign),
 	},
-	"cos": &tengo.UserFunction{
+	"cos": &slim.UserFunction{
 		Name:  "cos",
 		Value: FuncAFRF(math.Cos),
 	},
-	"cosh": &tengo.UserFunction{
+	"cosh": &slim.UserFunction{
 		Name:  "cosh",
 		Value: FuncAFRF(math.Cosh),
 	},
-	"dim": &tengo.UserFunction{
+	"dim": &slim.UserFunction{
 		Name:  "dim",
 		Value: FuncAFFRF(math.Dim),
 	},
-	"erf": &tengo.UserFunction{
+	"erf": &slim.UserFunction{
 		Name:  "erf",
 		Value: FuncAFRF(math.Erf),
 	},
-	"erfc": &tengo.UserFunction{
+	"erfc": &slim.UserFunction{
 		Name:  "erfc",
 		Value: FuncAFRF(math.Erfc),
 	},
-	"exp": &tengo.UserFunction{
+	"exp": &slim.UserFunction{
 		Name:  "exp",
 		Value: FuncAFRF(math.Exp),
 	},
-	"exp2": &tengo.UserFunction{
+	"exp2": &slim.UserFunction{
 		Name:  "exp2",
 		Value: FuncAFRF(math.Exp2),
 	},
-	"expm1": &tengo.UserFunction{
+	"expm1": &slim.UserFunction{
 		Name:  "expm1",
 		Value: FuncAFRF(math.Expm1),
 	},
-	"floor": &tengo.UserFunction{
+	"floor": &slim.UserFunction{
 		Name:  "floor",
 		Value: FuncAFRF(math.Floor),
 	},
-	"gamma": &tengo.UserFunction{
+	"gamma": &slim.UserFunction{
 		Name:  "gamma",
 		Value: FuncAFRF(math.Gamma),
 	},
-	"hypot": &tengo.UserFunction{
+	"hypot": &slim.UserFunction{
 		Name:  "hypot",
 		Value: FuncAFFRF(math.Hypot),
 	},
-	"ilogb": &tengo.UserFunction{
+	"ilogb": &slim.UserFunction{
 		Name:  "ilogb",
 		Value: FuncAFRI(math.Ilogb),
 	},
-	"inf": &tengo.UserFunction{
+	"inf": &slim.UserFunction{
 		Name:  "inf",
 		Value: FuncAIRF(math.Inf),
 	},
-	"is_inf": &tengo.UserFunction{
+	"is_inf": &slim.UserFunction{
 		Name:  "is_inf",
 		Value: FuncAFIRB(math.IsInf),
 	},
-	"is_nan": &tengo.UserFunction{
+	"is_nan": &slim.UserFunction{
 		Name:  "is_nan",
 		Value: FuncAFRB(math.IsNaN),
 	},
-	"j0": &tengo.UserFunction{
+	"j0": &slim.UserFunction{
 		Name:  "j0",
 		Value: FuncAFRF(math.J0),
 	},
-	"j1": &tengo.UserFunction{
+	"j1": &slim.UserFunction{
 		Name:  "j1",
 		Value: FuncAFRF(math.J1),
 	},
-	"jn": &tengo.UserFunction{
+	"jn": &slim.UserFunction{
 		Name:  "jn",
 		Value: FuncAIFRF(math.Jn),
 	},
-	"ldexp": &tengo.UserFunction{
+	"ldexp": &slim.UserFunction{
 		Name:  "ldexp",
 		Value: FuncAFIRF(math.Ldexp),
 	},
-	"log": &tengo.UserFunction{
+	"log": &slim.UserFunction{
 		Name:  "log",
 		Value: FuncAFRF(math.Log),
 	},
-	"log10": &tengo.UserFunction{
+	"log10": &slim.UserFunction{
 		Name:  "log10",
 		Value: FuncAFRF(math.Log10),
 	},
-	"log1p": &tengo.UserFunction{
+	"log1p": &slim.UserFunction{
 		Name:  "log1p",
 		Value: FuncAFRF(math.Log1p),
 	},
-	"log2": &tengo.UserFunction{
+	"log2": &slim.UserFunction{
 		Name:  "log2",
 		Value: FuncAFRF(math.Log2),
 	},
-	"logb": &tengo.UserFunction{
+	"logb": &slim.UserFunction{
 		Name:  "logb",
 		Value: FuncAFRF(math.Logb),
 	},
-	"max": &tengo.UserFunction{
+	"max": &slim.UserFunction{
 		Name:  "max",
 		Value: FuncAFFRF(math.Max),
 	},
-	"min": &tengo.UserFunction{
+	"min": &slim.UserFunction{
 		Name:  "min",
 		Value: FuncAFFRF(math.Min),
 	},
-	"mod": &tengo.UserFunction{
+	"mod": &slim.UserFunction{
 		Name:  "mod",
 		Value: FuncAFFRF(math.Mod),
 	},
-	"nan": &tengo.UserFunction{
+	"nan": &slim.UserFunction{
 		Name:  "nan",
 		Value: FuncARF(math.NaN),
 	},
-	"nextafter": &tengo.UserFunction{
+	"nextafter": &slim.UserFunction{
 		Name:  "nextafter",
 		Value: FuncAFFRF(math.Nextafter),
 	},
-	"pow": &tengo.UserFunction{
+	"pow": &slim.UserFunction{
 		Name:  "pow",
 		Value: FuncAFFRF(math.Pow),
 	},
-	"pow10": &tengo.UserFunction{
+	"pow10": &slim.UserFunction{
 		Name:  "pow10",
 		Value: FuncAIRF(math.Pow10),
 	},
-	"remainder": &tengo.UserFunction{
+	"remainder": &slim.UserFunction{
 		Name:  "remainder",
 		Value: FuncAFFRF(math.Remainder),
 	},
-	"signbit": &tengo.UserFunction{
+	"signbit": &slim.UserFunction{
 		Name:  "signbit",
 		Value: FuncAFRB(math.Signbit),
 	},
-	"sin": &tengo.UserFunction{
+	"sin": &slim.UserFunction{
 		Name:  "sin",
 		Value: FuncAFRF(math.Sin),
 	},
-	"sinh": &tengo.UserFunction{
+	"sinh": &slim.UserFunction{
 		Name:  "sinh",
 		Value: FuncAFRF(math.Sinh),
 	},
-	"sqrt": &tengo.UserFunction{
+	"sqrt": &slim.UserFunction{
 		Name:  "sqrt",
 		Value: FuncAFRF(math.Sqrt),
 	},
-	"tan": &tengo.UserFunction{
+	"tan": &slim.UserFunction{
 		Name:  "tan",
 		Value: FuncAFRF(math.Tan),
 	},
-	"tanh": &tengo.UserFunction{
+	"tanh": &slim.UserFunction{
 		Name:  "tanh",
 		Value: FuncAFRF(math.Tanh),
 	},
-	"trunc": &tengo.UserFunction{
+	"trunc": &slim.UserFunction{
 		Name:  "trunc",
 		Value: FuncAFRF(math.Trunc),
 	},
-	"y0": &tengo.UserFunction{
+	"y0": &slim.UserFunction{
 		Name:  "y0",
 		Value: FuncAFRF(math.Y0),
 	},
-	"y1": &tengo.UserFunction{
+	"y1": &slim.UserFunction{
 		Name:  "y1",
 		Value: FuncAFRF(math.Y1),
 	},
-	"yn": &tengo.UserFunction{
+	"yn": &slim.UserFunction{
 		Name:  "yn",
 		Value: FuncAIFRF(math.Yn),
 	},

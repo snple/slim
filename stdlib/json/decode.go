@@ -12,11 +12,11 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
 // Decode parses the JSON-encoded data and returns the result object.
-func Decode(data []byte) (tengo.Object, error) {
+func Decode(data []byte) (slim.Object, error) {
 	var d decodeState
 	err := checkValid(data, &d.scan)
 	if err != nil {
@@ -78,7 +78,7 @@ func (d *decodeState) scanWhile(op int) {
 	d.opcode = d.scan.eof()
 }
 
-func (d *decodeState) value() (tengo.Object, error) {
+func (d *decodeState) value() (slim.Object, error) {
 	switch d.opcode {
 	default:
 		panic(phasePanicMsg)
@@ -101,8 +101,8 @@ func (d *decodeState) value() (tengo.Object, error) {
 	}
 }
 
-func (d *decodeState) array() (tengo.Object, error) {
-	var arr []tengo.Object
+func (d *decodeState) array() (slim.Object, error) {
+	var arr []slim.Object
 	for {
 		// Look ahead for ] - can only happen on first iteration.
 		d.scanWhile(scanSkipSpace)
@@ -126,11 +126,11 @@ func (d *decodeState) array() (tengo.Object, error) {
 			panic(phasePanicMsg)
 		}
 	}
-	return &tengo.Array{Value: arr}, nil
+	return &slim.Array{Value: arr}, nil
 }
 
-func (d *decodeState) object() (tengo.Object, error) {
-	m := make(map[string]tengo.Object)
+func (d *decodeState) object() (slim.Object, error) {
+	m := make(map[string]slim.Object)
 	for {
 		// Read opening " of string key or closing }.
 		d.scanWhile(scanSkipSpace)
@@ -179,10 +179,10 @@ func (d *decodeState) object() (tengo.Object, error) {
 			panic(phasePanicMsg)
 		}
 	}
-	return &tengo.Map{Value: m}, nil
+	return &slim.Map{Value: m}, nil
 }
 
-func (d *decodeState) literal() (tengo.Object, error) {
+func (d *decodeState) literal() (slim.Object, error) {
 	// All bytes inside literal return scanContinue op code.
 	start := d.readIndex()
 	d.scanWhile(scanContinue)
@@ -191,27 +191,27 @@ func (d *decodeState) literal() (tengo.Object, error) {
 
 	switch c := item[0]; c {
 	case 'n': // null
-		return tengo.UndefinedValue, nil
+		return slim.UndefinedValue, nil
 
 	case 't', 'f': // true, false
 		if c == 't' {
-			return tengo.TrueValue, nil
+			return slim.TrueValue, nil
 		}
-		return tengo.FalseValue, nil
+		return slim.FalseValue, nil
 
 	case '"': // string
 		s, ok := unquote(item)
 		if !ok {
 			panic(phasePanicMsg)
 		}
-		return &tengo.String{Value: s}, nil
+		return &slim.String{Value: s}, nil
 
 	default: // number
 		if c != '-' && (c < '0' || c > '9') {
 			panic(phasePanicMsg)
 		}
 		n, _ := strconv.ParseFloat(string(item), 10)
-		return &tengo.Float{Value: n}, nil
+		return &slim.Float{Value: n}, nil
 	}
 }
 

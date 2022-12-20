@@ -1,4 +1,4 @@
-# Interoperability  
+# Interoperability
 
 ## Table of Contents
 
@@ -11,22 +11,22 @@
 
 ## Using Scripts
 
-Embedding and executing the Tengo code in Go is very easy. At a high level,
+Embedding and executing the slim code in Go is very easy. At a high level,
 this process is like:
 
-- create a [Script](https://godoc.org/github.com/d5/tengo#Script) instance with
+- create a [Script](https://godoc.org/github.com/snple/slim#Script) instance with
 your code,
 - _optionally_ add some
-[Script Variables](https://godoc.org/github.com/d5/tengo#Variable) to Script,
+[Script Variables](https://godoc.org/github.com/snple/slim#Variable) to Script,
 - compile or directly run the script,
 - retrieve _output_ values from the
-[Compiled](https://godoc.org/github.com/d5/tengo#Compiled) instance.
+[Compiled](https://godoc.org/github.com/snple/slim#Compiled) instance.
 
-The following is an example where a Tengo script is compiled and run with no
+The following is an example where a slim script is compiled and run with no
 input/output variables.
 
 ```golang
-import "github.com/d5/tengo/v2"
+import "github.com/snple/slim"
 
 var code = `
 reduce := func(seq, fn) {
@@ -39,7 +39,7 @@ print(reduce([1, 2, 3], func(x, s) { s += x }))
 `
 
 func main() {
-    s := tengo.NewScript([]byte(code))
+    s := slim.NewScript([]byte(code))
     if _, err := s.Run(); err != nil {
         panic(err)
     }
@@ -48,17 +48,17 @@ func main() {
 
 Here's another example where an input variable is added to the script, and, an
 output variable is accessed through
-[Variable.Int](https://godoc.org/github.com/d5/tengo#Variable.Int) function:
+[Variable.Int](https://godoc.org/github.com/snple/slim#Variable.Int) function:
 
 ```golang
 import (
     "fmt"
 
-    "github.com/d5/tengo/v2"
+    "github.com/snple/slim"
 )
 
 func main() {
-    s := tengo.NewScript([]byte(`a := b + 20`))
+    s := slim.NewScript([]byte(`a := b + 20`))
 
     // define variable 'b'
     _ = s.Add("b", 10)
@@ -91,26 +91,26 @@ func main() {
 ```
 
 A variable `b` is defined by the user before compilation using
-[Script.Add](https://godoc.org/github.com/d5/tengo#Script.Add) function. Then a
+[Script.Add](https://godoc.org/github.com/snple/slim#Script.Add) function. Then a
 compiled bytecode `c` is used to execute the bytecode and get the value of
 global variables. In this example, the value of global variable `a` is read
-using [Compiled.Get](https://godoc.org/github.com/d5/tengo#Compiled.Get)
+using [Compiled.Get](https://godoc.org/github.com/snple/slim#Compiled.Get)
 function. See
-[documentation](https://godoc.org/github.com/d5/tengo#Variable) for the
+[documentation](https://godoc.org/github.com/snple/slim#Variable) for the
 full list of variable value functions.
 
 Value of the global variables can be replaced using
-[Compiled.Set](https://godoc.org/github.com/d5/tengo#Compiled.Set) function.
+[Compiled.Set](https://godoc.org/github.com/snple/slim#Compiled.Set) function.
 But it will return an error if you try to set the value of un-defined global
-variables _(e.g. trying to set the value of `x` in the example)_.  
+variables _(e.g. trying to set the value of `x` in the example)_.
 
 ### Type Conversion Table
 
 When adding a Variable
-_([Script.Add](https://godoc.org/github.com/d5/tengo#Script.Add))_, Script
-converts Go values into Tengo values based on the following conversion table.
+_([Script.Add](https://godoc.org/github.com/snple/slim#Script.Add))_, Script
+converts Go values into slim values based on the following conversion table.
 
-| Go Type | Tengo Type | Note |
+| Go Type | slim Type | Note |
 | :--- | :--- | :--- |
 |`nil`|`Undefined`||
 |`string`|`String`||
@@ -124,18 +124,18 @@ converts Go values into Tengo values based on the following conversion table.
 |`time.Time`|`Time`||
 |`error`|`Error{String}`|use `error.Error()` as String value|
 |`map[string]Object`|`Map`||
-|`map[string]interface{}`|`Map`|individual elements converted to Tengo objects|
+|`map[string]interface{}`|`Map`|individual elements converted to slim objects|
 |`[]Object`|`Array`||
-|`[]interface{}`|`Array`|individual elements converted to Tengo objects|
+|`[]interface{}`|`Array`|individual elements converted to slim objects|
 |`Object`|`Object`|_(no type conversion performed)_|
 
 ### User Types
 
-Users can add and use a custom user type in Tengo code by implementing
-[Object](https://godoc.org/github.com/d5/tengo#Object) interface. Tengo runtime
+Users can add and use a custom user type in slim code by implementing
+[Object](https://godoc.org/github.com/snple/slim#Object) interface. slim runtime
 will treat the user types in the same way it does to the runtime types with no
 performance overhead. See
-[Object Types](https://github.com/d5/tengo/blob/master/docs/objects.md) for
+[Object Types](https://github.com/snple/slim/blob/master/docs/objects.md) for
 more details.
 
 ## Sandbox Environments
@@ -147,36 +147,36 @@ the following Script functions.
 
 SetImports sets the import modules with corresponding names. Script **does not**
 include any modules by default. You can use this function to include the
-[Standard Library](https://github.com/d5/tengo/blob/master/docs/stdlib.md).
+[Standard Library](https://github.com/snple/slim/blob/master/docs/stdlib.md).
 
 ```golang
-s := tengo.NewScript([]byte(`math := import("math"); a := math.abs(-19.84)`))
+s := slim.NewScript([]byte(`math := import("math"); a := math.abs(-19.84)`))
 
 s.SetImports(stdlib.GetModuleMap("math"))
 // or, to include all stdlib at once
 s.SetImports(stdlib.GetModuleMap(stdlib.AllModuleNames()...))
 ```
 
-You can also include Tengo's written module using `objects.SourceModule`
+You can also include slim's written module using `objects.SourceModule`
 (which implements `objects.Importable`).
 
 ```golang
-s := tengo.NewScript([]byte(`double := import("double"); a := double(20)`))
+s := slim.NewScript([]byte(`double := import("double"); a := double(20)`))
 
-mods := tengo.NewModuleMap()
+mods := slim.NewModuleMap()
 mods.AddSourceModule("double", []byte(`export func(x) { return x * 2 }`))
 s.SetImports(mods)
 ```
 
 To dynamically load or generate code for imported modules, implement and
-provide a `tengo.ModuleGetter`.
+provide a `slim.ModuleGetter`.
 
 ```golang
 type DynamicModules struct {
-  mods tengo.ModuleGetter
-  fallback func (name string) tengo.Importable
+  mods slim.ModuleGetter
+  fallback func (name string) slim.Importable
 }
-func (dm *DynamicModules) Get(name string) tengo.Importable {
+func (dm *DynamicModules) Get(name string) slim.Importable {
   if mod := dm.mods.Get(name); mod != nil {
     return mod
   }
@@ -185,12 +185,12 @@ func (dm *DynamicModules) Get(name string) tengo.Importable {
 // ...
 mods := &DynamicModules{
   mods: stdlib.GetModuleMap("math"),
-  fallback: func(name string) tengo.Importable {
+  fallback: func(name string) slim.Importable {
     src := ... // load or generate src for `name`
-    return &tengo.SourceModule{Src: src}
+    return &slim.SourceModule{Src: src}
   },
 }
-s := tengo.NewScript(`foo := import("foo")`)
+s := slim.NewScript(`foo := import("foo")`)
 s.SetImports(mods)
 ```
 
@@ -205,13 +205,13 @@ number (e.g. `-1`) if you don't need to limit the number of allocations.
 EnableFileImport enables or disables module loading from the local files. It's
 disabled by default.
 
-### tengo.MaxStringLen
+### slim.MaxStringLen
 
 Sets the maximum byte-length of string values. This limit applies to all
 running VM instances in the process. Also it's not recommended to set or update
 this value while any VM is executing.
 
-### tengo.MaxBytesLen
+### slim.MaxBytesLen
 
 Sets the maximum length of bytes values. This limit applies to all running VM
 instances in the process. Also it's not recommended to set or update this value
@@ -227,11 +227,11 @@ instances.
 ### Compiled.Clone()
 
 Clone creates a new copy of Compiled instance. Cloned copies are safe for
-concurrent use by multiple goroutines. 
+concurrent use by multiple goroutines.
 
 ```golang
 for i := 0; i < concurrency; i++ {
-    go func(compiled *tengo.Compiled) {
+    go func(compiled *slim.Compiled) {
         // inputs
         _ = compiled.Set("a", rand.Intn(10))
         _ = compiled.Set("b", rand.Intn(10))
@@ -250,9 +250,9 @@ for i := 0; i < concurrency; i++ {
 
 ## Compiler and VM
 
-Although it's not recommended, you can directly create and run the Tengo
-[Compiler](https://godoc.org/github.com/d5/tengo#Compiler), and
-[VM](https://godoc.org/github.com/d5/tengo#VM) for yourself instead of using
+Although it's not recommended, you can directly create and run the slim
+[Compiler](https://godoc.org/github.com/snple/slim#Compiler), and
+[VM](https://godoc.org/github.com/snple/slim#VM) for yourself instead of using
 Scripts and Script Variables. It's a bit more involved as you have to manage
 the symbol tables and global variables between them, but, basically that's what
 Script and Script Variable is doing internally.

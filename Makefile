@@ -6,7 +6,7 @@ lint:
 
 test: generate lint
 	go test -race -cover ./...
-	go run ./cmd/tengo -resolve ./testdata/cli/test.tengo
+	go run ./cmd/slim -resolve ./testdata/cli/test.slim
 
 fmt:
 	go fmt ./...

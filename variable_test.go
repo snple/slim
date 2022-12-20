@@ -1,10 +1,10 @@
-package tengo_test
+package slim_test
 
 import (
 	"testing"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/require"
+	"github.com/snple/slim"
+	"github.com/snple/slim/require"
 )
 
 type VariableTest struct {
@@ -17,7 +17,7 @@ type VariableTest struct {
 	CharValue   rune
 	BoolValue   bool
 	StringValue string
-	Object      tengo.Object
+	Object      slim.Object
 	IsUndefined bool
 }
 
@@ -33,7 +33,7 @@ func TestVariable(t *testing.T) {
 			CharValue:   rune(1),
 			BoolValue:   true,
 			StringValue: "1",
-			Object:      &tengo.Int{Value: 1},
+			Object:      &slim.Int{Value: 1},
 		},
 		{
 			Name:        "b",
@@ -42,7 +42,7 @@ func TestVariable(t *testing.T) {
 			FloatValue:  52.11,
 			StringValue: "52.11",
 			BoolValue:   true,
-			Object:      &tengo.String{Value: "52.11"},
+			Object:      &slim.String{Value: "52.11"},
 		},
 		{
 			Name:        "c",
@@ -53,19 +53,19 @@ func TestVariable(t *testing.T) {
 			FloatValue:  0,
 			BoolValue:   true,
 			StringValue: "true",
-			Object:      tengo.TrueValue,
+			Object:      slim.TrueValue,
 		},
 		{
 			Name:        "d",
 			Value:       nil,
 			ValueType:   "undefined",
-			Object:      tengo.UndefinedValue,
+			Object:      slim.UndefinedValue,
 			IsUndefined: true,
 		},
 	}
 
 	for _, tc := range vars {
-		v, err := tengo.NewVariable(tc.Name, tc.Value)
+		v, err := slim.NewVariable(tc.Name, tc.Value)
 		require.NoError(t, err)
 		require.Equal(t, tc.Value, v.Value(), "Name: %s", tc.Name)
 		require.Equal(t, tc.ValueType, v.ValueType(), "Name: %s", tc.Name)

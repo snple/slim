@@ -1,4 +1,4 @@
-#!/usr/bin/env tengo
+#!/usr/bin/env slim
 
 os := import("os")
 one := import("one")

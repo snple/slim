@@ -1,4 +1,4 @@
-/*An example to demonstrate an alternative way to run tengo functions from go.
+/*An example to demonstrate an alternative way to run slim functions from go.
  */
 package main
 
@@ -11,38 +11,38 @@ import (
 	"sync"
 	"time"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
 // CallArgs holds function name to be executed and its required parameters with
 // a channel to listen result of function.
 type CallArgs struct {
 	Func   string
-	Params []tengo.Object
-	Result chan<- tengo.Object
+	Params []slim.Object
+	Result chan<- slim.Object
 }
 
 // NewGoProxy creates GoProxy object.
 func NewGoProxy(ctx context.Context) *GoProxy {
 	mod := new(GoProxy)
 	mod.ctx = ctx
-	mod.callbacks = make(map[string]tengo.Object)
+	mod.callbacks = make(map[string]slim.Object)
 	mod.callChan = make(chan *CallArgs, 1)
-	mod.moduleMap = map[string]tengo.Object{
-		"next":     &tengo.UserFunction{Value: mod.next},
-		"register": &tengo.UserFunction{Value: mod.register},
-		"args":     &tengo.UserFunction{Value: mod.args},
+	mod.moduleMap = map[string]slim.Object{
+		"next":     &slim.UserFunction{Value: mod.next},
+		"register": &slim.UserFunction{Value: mod.register},
+		"args":     &slim.UserFunction{Value: mod.args},
 	}
 	mod.tasks = list.New()
 	return mod
 }
 
-// GoProxy is a builtin tengo module to register tengo functions and run them.
+// GoProxy is a builtin slim module to register slim functions and run them.
 type GoProxy struct {
-	tengo.ObjectImpl
+	slim.ObjectImpl
 	ctx       context.Context
-	moduleMap map[string]tengo.Object
-	callbacks map[string]tengo.Object
+	moduleMap map[string]slim.Object
+	callbacks map[string]slim.Object
 	callChan  chan *CallArgs
 	tasks     *list.List
 	mtx       sync.Mutex
@@ -54,63 +54,63 @@ func (mod *GoProxy) TypeName() string {
 }
 
 func (mod *GoProxy) String() string {
-	m := tengo.ImmutableMap{Value: mod.moduleMap}
+	m := slim.ImmutableMap{Value: mod.moduleMap}
 	return m.String()
 }
 
-// ModuleMap returns a map to add a builtin tengo module.
-func (mod *GoProxy) ModuleMap() map[string]tengo.Object {
+// ModuleMap returns a map to add a builtin slim module.
+func (mod *GoProxy) ModuleMap() map[string]slim.Object {
 	return mod.moduleMap
 }
 
-// CallChan returns call channel which expects arguments to run a tengo
+// CallChan returns call channel which expects arguments to run a slim
 // function.
 func (mod *GoProxy) CallChan() chan<- *CallArgs {
 	return mod.callChan
 }
 
-func (mod *GoProxy) next(args ...tengo.Object) (tengo.Object, error) {
+func (mod *GoProxy) next(args ...slim.Object) (slim.Object, error) {
 	mod.mtx.Lock()
 	defer mod.mtx.Unlock()
 	select {
 	case <-mod.ctx.Done():
-		return tengo.FalseValue, nil
+		return slim.FalseValue, nil
 	case args := <-mod.callChan:
 		if args != nil {
 			mod.tasks.PushBack(args)
 		}
-		return tengo.TrueValue, nil
+		return slim.TrueValue, nil
 	}
 }
 
-func (mod *GoProxy) register(args ...tengo.Object) (tengo.Object, error) {
+func (mod *GoProxy) register(args ...slim.Object) (slim.Object, error) {
 	if len(args) == 0 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
 	mod.mtx.Lock()
 	defer mod.mtx.Unlock()
 
 	switch v := args[0].(type) {
-	case *tengo.Map:
+	case *slim.Map:
 		mod.callbacks = v.Value
-	case *tengo.ImmutableMap:
+	case *slim.ImmutableMap:
 		mod.callbacks = v.Value
 	default:
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "map",
 			Found:    args[0].TypeName(),
 		}
 	}
-	return tengo.UndefinedValue, nil
+	return slim.UndefinedValue, nil
 }
 
-func (mod *GoProxy) args(args ...tengo.Object) (tengo.Object, error) {
+func (mod *GoProxy) args(args ...slim.Object) (slim.Object, error) {
 	mod.mtx.Lock()
 	defer mod.mtx.Unlock()
 
 	if mod.tasks.Len() == 0 {
-		return tengo.UndefinedValue, nil
+		return slim.UndefinedValue, nil
 	}
 	el := mod.tasks.Front()
 	callArgs, ok := el.Value.(*CallArgs)
@@ -120,40 +120,40 @@ func (mod *GoProxy) args(args ...tengo.Object) (tengo.Object, error) {
 	mod.tasks.Remove(el)
 	f, ok := mod.callbacks[callArgs.Func]
 	if !ok {
-		return tengo.UndefinedValue, nil
+		return slim.UndefinedValue, nil
 	}
-	compiledFunc, ok := f.(*tengo.CompiledFunction)
+	compiledFunc, ok := f.(*slim.CompiledFunction)
 	if !ok {
-		return tengo.UndefinedValue, nil
+		return slim.UndefinedValue, nil
 	}
 	params := callArgs.Params
 	if params == nil {
-		params = make([]tengo.Object, 0)
+		params = make([]slim.Object, 0)
 	}
 	// callable.VarArgs implementation is omitted.
-	return &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"result": &tengo.UserFunction{
-				Value: func(args ...tengo.Object) (tengo.Object, error) {
+	return &slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"result": &slim.UserFunction{
+				Value: func(args ...slim.Object) (slim.Object, error) {
 					if len(args) > 0 {
 						callArgs.Result <- args[0]
-						return tengo.UndefinedValue, nil
+						return slim.UndefinedValue, nil
 					}
-					callArgs.Result <- &tengo.Error{
-						Value: &tengo.String{
-							Value: tengo.ErrWrongNumArguments.Error()},
+					callArgs.Result <- &slim.Error{
+						Value: &slim.String{
+							Value: slim.ErrWrongNumArguments.Error()},
 					}
-					return tengo.UndefinedValue, nil
+					return slim.UndefinedValue, nil
 				}},
-			"num_params": &tengo.Int{Value: int64(compiledFunc.NumParameters)},
+			"num_params": &slim.Int{Value: int64(compiledFunc.NumParameters)},
 			"callable":   compiledFunc,
-			"params":     &tengo.Array{Value: params},
+			"params":     &slim.Array{Value: params},
 		},
 	}, nil
 }
 
-// ProxySource is a tengo script to handle bidirectional arguments flow between
-// go and pure tengo functions. Note: you should add more if conditions for
+// ProxySource is a slim script to handle bidirectional arguments flow between
+// go and pure slim functions. Note: you should add more if conditions for
 // different number of parameters.
 // TODO: handle variadic functions.
 var ProxySource = `
@@ -187,9 +187,9 @@ func main() {
 	 // goproxy and proxy must be imported.
 	 goproxy := import("goproxy")
 	 proxy := import("proxy")
- 
+
 	 global := 0
- 
+
 	 callbacks := {
 		 sum: func(a, b) {
 			 return a + b
@@ -202,10 +202,10 @@ func main() {
 			 return global
 		 }
 	 }
- 
+
 	 // Register callbacks to call them in goproxy loop.
 	 goproxy.register(callbacks)
- 
+
 	 // goproxy loop waits for new call requests and run them with the help of
 	 // "proxy" source module. Cancelling the context breaks the loop.
 	 for goproxy.next() {
@@ -215,8 +215,8 @@ func main() {
 	// 5 seconds context timeout is enough for an example.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	script := tengo.NewScript([]byte(src))
-	moduleMap := tengo.NewModuleMap()
+	script := slim.NewScript([]byte(src))
+	moduleMap := slim.NewModuleMap()
 	goproxy := NewGoProxy(ctx)
 	// register modules
 	moduleMap.AddBuiltinModule("goproxy", goproxy.ModuleMap())
@@ -228,11 +228,11 @@ func main() {
 		panic(err)
 	}
 
-	// call "sum", "multiply", "increment" functions from tengo in a new goroutine
+	// call "sum", "multiply", "increment" functions from slim in a new goroutine
 	go func() {
 		callChan := goproxy.CallChan()
-		result := make(chan tengo.Object, 1)
-		// TODO: check tengo error from result channel.
+		result := make(chan slim.Object, 1)
+		// TODO: check slim error from result channel.
 	loop:
 		for {
 			select {
@@ -240,27 +240,27 @@ func main() {
 				break loop
 			default:
 			}
-			fmt.Println("Calling tengo sum function")
+			fmt.Println("Calling slim sum function")
 			i1, i2 := rand.Int63n(100), rand.Int63n(100)
 			callChan <- &CallArgs{Func: "sum",
-				Params: []tengo.Object{&tengo.Int{Value: i1},
-					&tengo.Int{Value: i2}},
+				Params: []slim.Object{&slim.Int{Value: i1},
+					&slim.Int{Value: i2}},
 				Result: result,
 			}
 			v := <-result
 			fmt.Printf("%d + %d = %v\n", i1, i2, v)
 
-			fmt.Println("Calling tengo multiply function")
+			fmt.Println("Calling slim multiply function")
 			i1, i2 = rand.Int63n(20), rand.Int63n(20)
 			callChan <- &CallArgs{Func: "multiply",
-				Params: []tengo.Object{&tengo.Int{Value: i1},
-					&tengo.Int{Value: i2}},
+				Params: []slim.Object{&slim.Int{Value: i1},
+					&slim.Int{Value: i2}},
 				Result: result,
 			}
 			v = <-result
 			fmt.Printf("%d * %d = %v\n", i1, i2, v)
 
-			fmt.Println("Calling tengo increment function")
+			fmt.Println("Calling slim increment function")
 			callChan <- &CallArgs{Func: "increment", Result: result}
 			v = <-result
 			fmt.Printf("increment = %v\n", v)

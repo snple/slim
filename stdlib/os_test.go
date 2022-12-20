@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/require"
+	"github.com/snple/slim"
+	"github.com/snple/slim/require"
 )
 
 func TestReadFile(t *testing.T) {
@@ -20,7 +20,7 @@ func TestReadFile(t *testing.T) {
 	_ = tf.Close()
 
 	module(t, "os").call("read_file", tf.Name()).
-		expect(&tengo.Bytes{Value: content})
+		expect(&slim.Bytes{Value: content})
 }
 
 func TestReadFileArgs(t *testing.T) {
@@ -46,13 +46,13 @@ func TestFileStatFile(t *testing.T) {
 		return
 	}
 
-	module(t, "os").call("stat", tf.Name()).expect(&tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"name":      &tengo.String{Value: stat.Name()},
-			"mtime":     &tengo.Time{Value: stat.ModTime()},
-			"size":      &tengo.Int{Value: stat.Size()},
-			"mode":      &tengo.Int{Value: int64(stat.Mode())},
-			"directory": tengo.FalseValue,
+	module(t, "os").call("stat", tf.Name()).expect(&slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"name":      &slim.String{Value: stat.Name()},
+			"mtime":     &slim.Time{Value: stat.ModTime()},
+			"size":      &slim.Int{Value: stat.Size()},
+			"mode":      &slim.Int{Value: int64(stat.Mode())},
+			"directory": slim.FalseValue,
 		},
 	})
 }
@@ -65,44 +65,44 @@ func TestFileStatDir(t *testing.T) {
 	stat, err := os.Stat(td)
 	require.NoError(t, err)
 
-	module(t, "os").call("stat", td).expect(&tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"name":      &tengo.String{Value: stat.Name()},
-			"mtime":     &tengo.Time{Value: stat.ModTime()},
-			"size":      &tengo.Int{Value: stat.Size()},
-			"mode":      &tengo.Int{Value: int64(stat.Mode())},
-			"directory": tengo.TrueValue,
+	module(t, "os").call("stat", td).expect(&slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"name":      &slim.String{Value: stat.Name()},
+			"mtime":     &slim.Time{Value: stat.ModTime()},
+			"size":      &slim.Int{Value: stat.Size()},
+			"mode":      &slim.Int{Value: int64(stat.Mode())},
+			"directory": slim.TrueValue,
 		},
 	})
 }
 
 func TestOSExpandEnv(t *testing.T) {
-	curMaxStringLen := tengo.MaxStringLen
-	defer func() { tengo.MaxStringLen = curMaxStringLen }()
-	tengo.MaxStringLen = 12
+	curMaxStringLen := slim.MaxStringLen
+	defer func() { slim.MaxStringLen = curMaxStringLen }()
+	slim.MaxStringLen = 12
 
-	_ = os.Setenv("TENGO", "FOO BAR")
-	module(t, "os").call("expand_env", "$TENGO").expect("FOO BAR")
+	_ = os.Setenv("slim", "FOO BAR")
+	module(t, "os").call("expand_env", "$slim").expect("FOO BAR")
 
-	_ = os.Setenv("TENGO", "FOO")
-	module(t, "os").call("expand_env", "$TENGO $TENGO").expect("FOO FOO")
+	_ = os.Setenv("slim", "FOO")
+	module(t, "os").call("expand_env", "$slim $slim").expect("FOO FOO")
 
-	_ = os.Setenv("TENGO", "123456789012")
-	module(t, "os").call("expand_env", "$TENGO").expect("123456789012")
+	_ = os.Setenv("slim", "123456789012")
+	module(t, "os").call("expand_env", "$slim").expect("123456789012")
 
-	_ = os.Setenv("TENGO", "1234567890123")
-	module(t, "os").call("expand_env", "$TENGO").expectError()
+	_ = os.Setenv("slim", "1234567890123")
+	module(t, "os").call("expand_env", "$slim").expectError()
 
-	_ = os.Setenv("TENGO", "123456")
-	module(t, "os").call("expand_env", "$TENGO$TENGO").expect("123456123456")
+	_ = os.Setenv("slim", "123456")
+	module(t, "os").call("expand_env", "$slim$slim").expect("123456123456")
 
-	_ = os.Setenv("TENGO", "123456")
-	module(t, "os").call("expand_env", "${TENGO}${TENGO}").
+	_ = os.Setenv("slim", "123456")
+	module(t, "os").call("expand_env", "${slim}${slim}").
 		expect("123456123456")
 
-	_ = os.Setenv("TENGO", "123456")
-	module(t, "os").call("expand_env", "$TENGO $TENGO").expectError()
+	_ = os.Setenv("slim", "123456")
+	module(t, "os").call("expand_env", "$slim $slim").expectError()
 
-	_ = os.Setenv("TENGO", "123456")
-	module(t, "os").call("expand_env", "${TENGO} ${TENGO}").expectError()
+	_ = os.Setenv("slim", "123456")
+	module(t, "os").call("expand_env", "${slim} ${slim}").expectError()
 }

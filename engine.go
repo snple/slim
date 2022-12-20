@@ -1,10 +1,10 @@
-package tengo
+package slim
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/d5/tengo/v2/parser"
+	"github.com/snple/slim/parser"
 )
 
 type Engine struct {

@@ -7,206 +7,206 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-var osModule = map[string]tengo.Object{
-	"o_rdonly":            &tengo.Int{Value: int64(os.O_RDONLY)},
-	"o_wronly":            &tengo.Int{Value: int64(os.O_WRONLY)},
-	"o_rdwr":              &tengo.Int{Value: int64(os.O_RDWR)},
-	"o_append":            &tengo.Int{Value: int64(os.O_APPEND)},
-	"o_create":            &tengo.Int{Value: int64(os.O_CREATE)},
-	"o_excl":              &tengo.Int{Value: int64(os.O_EXCL)},
-	"o_sync":              &tengo.Int{Value: int64(os.O_SYNC)},
-	"o_trunc":             &tengo.Int{Value: int64(os.O_TRUNC)},
-	"mode_dir":            &tengo.Int{Value: int64(os.ModeDir)},
-	"mode_append":         &tengo.Int{Value: int64(os.ModeAppend)},
-	"mode_exclusive":      &tengo.Int{Value: int64(os.ModeExclusive)},
-	"mode_temporary":      &tengo.Int{Value: int64(os.ModeTemporary)},
-	"mode_symlink":        &tengo.Int{Value: int64(os.ModeSymlink)},
-	"mode_device":         &tengo.Int{Value: int64(os.ModeDevice)},
-	"mode_named_pipe":     &tengo.Int{Value: int64(os.ModeNamedPipe)},
-	"mode_socket":         &tengo.Int{Value: int64(os.ModeSocket)},
-	"mode_setuid":         &tengo.Int{Value: int64(os.ModeSetuid)},
-	"mode_setgui":         &tengo.Int{Value: int64(os.ModeSetgid)},
-	"mode_char_device":    &tengo.Int{Value: int64(os.ModeCharDevice)},
-	"mode_sticky":         &tengo.Int{Value: int64(os.ModeSticky)},
-	"mode_type":           &tengo.Int{Value: int64(os.ModeType)},
-	"mode_perm":           &tengo.Int{Value: int64(os.ModePerm)},
-	"path_separator":      &tengo.Char{Value: os.PathSeparator},
-	"path_list_separator": &tengo.Char{Value: os.PathListSeparator},
-	"dev_null":            &tengo.String{Value: os.DevNull},
-	"seek_set":            &tengo.Int{Value: int64(io.SeekStart)},
-	"seek_cur":            &tengo.Int{Value: int64(io.SeekCurrent)},
-	"seek_end":            &tengo.Int{Value: int64(io.SeekEnd)},
-	"args": &tengo.UserFunction{
+var osModule = map[string]slim.Object{
+	"o_rdonly":            &slim.Int{Value: int64(os.O_RDONLY)},
+	"o_wronly":            &slim.Int{Value: int64(os.O_WRONLY)},
+	"o_rdwr":              &slim.Int{Value: int64(os.O_RDWR)},
+	"o_append":            &slim.Int{Value: int64(os.O_APPEND)},
+	"o_create":            &slim.Int{Value: int64(os.O_CREATE)},
+	"o_excl":              &slim.Int{Value: int64(os.O_EXCL)},
+	"o_sync":              &slim.Int{Value: int64(os.O_SYNC)},
+	"o_trunc":             &slim.Int{Value: int64(os.O_TRUNC)},
+	"mode_dir":            &slim.Int{Value: int64(os.ModeDir)},
+	"mode_append":         &slim.Int{Value: int64(os.ModeAppend)},
+	"mode_exclusive":      &slim.Int{Value: int64(os.ModeExclusive)},
+	"mode_temporary":      &slim.Int{Value: int64(os.ModeTemporary)},
+	"mode_symlink":        &slim.Int{Value: int64(os.ModeSymlink)},
+	"mode_device":         &slim.Int{Value: int64(os.ModeDevice)},
+	"mode_named_pipe":     &slim.Int{Value: int64(os.ModeNamedPipe)},
+	"mode_socket":         &slim.Int{Value: int64(os.ModeSocket)},
+	"mode_setuid":         &slim.Int{Value: int64(os.ModeSetuid)},
+	"mode_setgui":         &slim.Int{Value: int64(os.ModeSetgid)},
+	"mode_char_device":    &slim.Int{Value: int64(os.ModeCharDevice)},
+	"mode_sticky":         &slim.Int{Value: int64(os.ModeSticky)},
+	"mode_type":           &slim.Int{Value: int64(os.ModeType)},
+	"mode_perm":           &slim.Int{Value: int64(os.ModePerm)},
+	"path_separator":      &slim.Char{Value: os.PathSeparator},
+	"path_list_separator": &slim.Char{Value: os.PathListSeparator},
+	"dev_null":            &slim.String{Value: os.DevNull},
+	"seek_set":            &slim.Int{Value: int64(io.SeekStart)},
+	"seek_cur":            &slim.Int{Value: int64(io.SeekCurrent)},
+	"seek_end":            &slim.Int{Value: int64(io.SeekEnd)},
+	"args": &slim.UserFunction{
 		Name:  "args",
 		Value: osArgs,
 	}, // args() => array(string)
-	"chdir": &tengo.UserFunction{
+	"chdir": &slim.UserFunction{
 		Name:  "chdir",
 		Value: FuncASRE(os.Chdir),
 	}, // chdir(dir string) => error
 	"chmod": osFuncASFmRE("chmod", os.Chmod), // chmod(name string, mode int) => error
-	"chown": &tengo.UserFunction{
+	"chown": &slim.UserFunction{
 		Name:  "chown",
 		Value: FuncASIIRE(os.Chown),
 	}, // chown(name string, uid int, gid int) => error
-	"clearenv": &tengo.UserFunction{
+	"clearenv": &slim.UserFunction{
 		Name:  "clearenv",
 		Value: FuncAR(os.Clearenv),
 	}, // clearenv()
-	"environ": &tengo.UserFunction{
+	"environ": &slim.UserFunction{
 		Name:  "environ",
 		Value: FuncARSs(os.Environ),
 	}, // environ() => array(string)
-	"exit": &tengo.UserFunction{
+	"exit": &slim.UserFunction{
 		Name:  "exit",
 		Value: FuncAIR(os.Exit),
 	}, // exit(code int)
-	"expand_env": &tengo.UserFunction{
+	"expand_env": &slim.UserFunction{
 		Name:  "expand_env",
 		Value: osExpandEnv,
 	}, // expand_env(s string) => string
-	"getegid": &tengo.UserFunction{
+	"getegid": &slim.UserFunction{
 		Name:  "getegid",
 		Value: FuncARI(os.Getegid),
 	}, // getegid() => int
-	"getenv": &tengo.UserFunction{
+	"getenv": &slim.UserFunction{
 		Name:  "getenv",
 		Value: FuncASRS(os.Getenv),
 	}, // getenv(s string) => string
-	"geteuid": &tengo.UserFunction{
+	"geteuid": &slim.UserFunction{
 		Name:  "geteuid",
 		Value: FuncARI(os.Geteuid),
 	}, // geteuid() => int
-	"getgid": &tengo.UserFunction{
+	"getgid": &slim.UserFunction{
 		Name:  "getgid",
 		Value: FuncARI(os.Getgid),
 	}, // getgid() => int
-	"getgroups": &tengo.UserFunction{
+	"getgroups": &slim.UserFunction{
 		Name:  "getgroups",
 		Value: FuncARIsE(os.Getgroups),
 	}, // getgroups() => array(string)/error
-	"getpagesize": &tengo.UserFunction{
+	"getpagesize": &slim.UserFunction{
 		Name:  "getpagesize",
 		Value: FuncARI(os.Getpagesize),
 	}, // getpagesize() => int
-	"getpid": &tengo.UserFunction{
+	"getpid": &slim.UserFunction{
 		Name:  "getpid",
 		Value: FuncARI(os.Getpid),
 	}, // getpid() => int
-	"getppid": &tengo.UserFunction{
+	"getppid": &slim.UserFunction{
 		Name:  "getppid",
 		Value: FuncARI(os.Getppid),
 	}, // getppid() => int
-	"getuid": &tengo.UserFunction{
+	"getuid": &slim.UserFunction{
 		Name:  "getuid",
 		Value: FuncARI(os.Getuid),
 	}, // getuid() => int
-	"getwd": &tengo.UserFunction{
+	"getwd": &slim.UserFunction{
 		Name:  "getwd",
 		Value: FuncARSE(os.Getwd),
 	}, // getwd() => string/error
-	"hostname": &tengo.UserFunction{
+	"hostname": &slim.UserFunction{
 		Name:  "hostname",
 		Value: FuncARSE(os.Hostname),
 	}, // hostname() => string/error
-	"lchown": &tengo.UserFunction{
+	"lchown": &slim.UserFunction{
 		Name:  "lchown",
 		Value: FuncASIIRE(os.Lchown),
 	}, // lchown(name string, uid int, gid int) => error
-	"link": &tengo.UserFunction{
+	"link": &slim.UserFunction{
 		Name:  "link",
 		Value: FuncASSRE(os.Link),
 	}, // link(oldname string, newname string) => error
-	"lookup_env": &tengo.UserFunction{
+	"lookup_env": &slim.UserFunction{
 		Name:  "lookup_env",
 		Value: osLookupEnv,
 	}, // lookup_env(key string) => string/false
 	"mkdir":     osFuncASFmRE("mkdir", os.Mkdir),        // mkdir(name string, perm int) => error
 	"mkdir_all": osFuncASFmRE("mkdir_all", os.MkdirAll), // mkdir_all(name string, perm int) => error
-	"readlink": &tengo.UserFunction{
+	"readlink": &slim.UserFunction{
 		Name:  "readlink",
 		Value: FuncASRSE(os.Readlink),
 	}, // readlink(name string) => string/error
-	"remove": &tengo.UserFunction{
+	"remove": &slim.UserFunction{
 		Name:  "remove",
 		Value: FuncASRE(os.Remove),
 	}, // remove(name string) => error
-	"remove_all": &tengo.UserFunction{
+	"remove_all": &slim.UserFunction{
 		Name:  "remove_all",
 		Value: FuncASRE(os.RemoveAll),
 	}, // remove_all(name string) => error
-	"rename": &tengo.UserFunction{
+	"rename": &slim.UserFunction{
 		Name:  "rename",
 		Value: FuncASSRE(os.Rename),
 	}, // rename(oldpath string, newpath string) => error
-	"setenv": &tengo.UserFunction{
+	"setenv": &slim.UserFunction{
 		Name:  "setenv",
 		Value: FuncASSRE(os.Setenv),
 	}, // setenv(key string, value string) => error
-	"symlink": &tengo.UserFunction{
+	"symlink": &slim.UserFunction{
 		Name:  "symlink",
 		Value: FuncASSRE(os.Symlink),
 	}, // symlink(oldname string newname string) => error
-	"temp_dir": &tengo.UserFunction{
+	"temp_dir": &slim.UserFunction{
 		Name:  "temp_dir",
 		Value: FuncARS(os.TempDir),
 	}, // temp_dir() => string
-	"truncate": &tengo.UserFunction{
+	"truncate": &slim.UserFunction{
 		Name:  "truncate",
 		Value: FuncASI64RE(os.Truncate),
 	}, // truncate(name string, size int) => error
-	"unsetenv": &tengo.UserFunction{
+	"unsetenv": &slim.UserFunction{
 		Name:  "unsetenv",
 		Value: FuncASRE(os.Unsetenv),
 	}, // unsetenv(key string) => error
-	"create": &tengo.UserFunction{
+	"create": &slim.UserFunction{
 		Name:  "create",
 		Value: osCreate,
 	}, // create(name string) => imap(file)/error
-	"open": &tengo.UserFunction{
+	"open": &slim.UserFunction{
 		Name:  "open",
 		Value: osOpen,
 	}, // open(name string) => imap(file)/error
-	"open_file": &tengo.UserFunction{
+	"open_file": &slim.UserFunction{
 		Name:  "open_file",
 		Value: osOpenFile,
 	}, // open_file(name string, flag int, perm int) => imap(file)/error
-	"find_process": &tengo.UserFunction{
+	"find_process": &slim.UserFunction{
 		Name:  "find_process",
 		Value: osFindProcess,
 	}, // find_process(pid int) => imap(process)/error
-	"start_process": &tengo.UserFunction{
+	"start_process": &slim.UserFunction{
 		Name:  "start_process",
 		Value: osStartProcess,
 	}, // start_process(name string, argv array(string), dir string, env array(string)) => imap(process)/error
-	"exec_look_path": &tengo.UserFunction{
+	"exec_look_path": &slim.UserFunction{
 		Name:  "exec_look_path",
 		Value: FuncASRSE(exec.LookPath),
 	}, // exec_look_path(file) => string/error
-	"exec": &tengo.UserFunction{
+	"exec": &slim.UserFunction{
 		Name:  "exec",
 		Value: osExec,
 	}, // exec(name, args...) => command
-	"stat": &tengo.UserFunction{
+	"stat": &slim.UserFunction{
 		Name:  "stat",
 		Value: osStat,
 	}, // stat(name) => imap(fileinfo)/error
-	"read_file": &tengo.UserFunction{
+	"read_file": &slim.UserFunction{
 		Name:  "read_file",
 		Value: osReadFile,
 	}, // readfile(name) => array(byte)/error
 }
 
-func osReadFile(args ...tengo.Object) (ret tengo.Object, err error) {
+func osReadFile(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	fname, ok := tengo.ToString(args[0])
+	fname, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -216,19 +216,19 @@ func osReadFile(args ...tengo.Object) (ret tengo.Object, err error) {
 	if err != nil {
 		return wrapError(err), nil
 	}
-	if len(bytes) > tengo.MaxBytesLen {
-		return nil, tengo.ErrBytesLimit
+	if len(bytes) > slim.MaxBytesLen {
+		return nil, slim.ErrBytesLimit
 	}
-	return &tengo.Bytes{Value: bytes}, nil
+	return &slim.Bytes{Value: bytes}, nil
 }
 
-func osStat(args ...tengo.Object) (ret tengo.Object, err error) {
+func osStat(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	fname, ok := tengo.ToString(args[0])
+	fname, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -238,29 +238,29 @@ func osStat(args ...tengo.Object) (ret tengo.Object, err error) {
 	if err != nil {
 		return wrapError(err), nil
 	}
-	fstat := &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"name":  &tengo.String{Value: stat.Name()},
-			"mtime": &tengo.Time{Value: stat.ModTime()},
-			"size":  &tengo.Int{Value: stat.Size()},
-			"mode":  &tengo.Int{Value: int64(stat.Mode())},
+	fstat := &slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"name":  &slim.String{Value: stat.Name()},
+			"mtime": &slim.Time{Value: stat.ModTime()},
+			"size":  &slim.Int{Value: stat.Size()},
+			"mode":  &slim.Int{Value: int64(stat.Mode())},
 		},
 	}
 	if stat.IsDir() {
-		fstat.Value["directory"] = tengo.TrueValue
+		fstat.Value["directory"] = slim.TrueValue
 	} else {
-		fstat.Value["directory"] = tengo.FalseValue
+		fstat.Value["directory"] = slim.FalseValue
 	}
 	return fstat, nil
 }
 
-func osCreate(args ...tengo.Object) (tengo.Object, error) {
+func osCreate(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -273,13 +273,13 @@ func osCreate(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSFile(res), nil
 }
 
-func osOpen(args ...tengo.Object) (tengo.Object, error) {
+func osOpen(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -292,29 +292,29 @@ func osOpen(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSFile(res), nil
 }
 
-func osOpenFile(args ...tengo.Object) (tengo.Object, error) {
+func osOpenFile(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 3 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
 		}
 	}
-	i2, ok := tengo.ToInt(args[1])
+	i2, ok := slim.ToInt(args[1])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "int(compatible)",
 			Found:    args[1].TypeName(),
 		}
 	}
-	i3, ok := tengo.ToInt(args[2])
+	i3, ok := slim.ToInt(args[2])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "third",
 			Expected: "int(compatible)",
 			Found:    args[2].TypeName(),
@@ -327,16 +327,16 @@ func osOpenFile(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSFile(res), nil
 }
 
-func osArgs(args ...tengo.Object) (tengo.Object, error) {
+func osArgs(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 0 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	arr := &tengo.Array{}
+	arr := &slim.Array{}
 	for _, osArg := range os.Args {
-		if len(osArg) > tengo.MaxStringLen {
-			return nil, tengo.ErrStringLimit
+		if len(osArg) > slim.MaxStringLen {
+			return nil, slim.ErrStringLimit
 		}
-		arr.Value = append(arr.Value, &tengo.String{Value: osArg})
+		arr.Value = append(arr.Value, &slim.String{Value: osArg})
 	}
 	return arr, nil
 }
@@ -344,24 +344,24 @@ func osArgs(args ...tengo.Object) (tengo.Object, error) {
 func osFuncASFmRE(
 	name string,
 	fn func(string, os.FileMode) error,
-) *tengo.UserFunction {
-	return &tengo.UserFunction{
+) *slim.UserFunction {
+	return &slim.UserFunction{
 		Name: name,
-		Value: func(args ...tengo.Object) (tengo.Object, error) {
+		Value: func(args ...slim.Object) (slim.Object, error) {
 			if len(args) != 2 {
-				return nil, tengo.ErrWrongNumArguments
+				return nil, slim.ErrWrongNumArguments
 			}
-			s1, ok := tengo.ToString(args[0])
+			s1, ok := slim.ToString(args[0])
 			if !ok {
-				return nil, tengo.ErrInvalidArgumentType{
+				return nil, slim.ErrInvalidArgumentType{
 					Name:     "first",
 					Expected: "string(compatible)",
 					Found:    args[0].TypeName(),
 				}
 			}
-			i2, ok := tengo.ToInt64(args[1])
+			i2, ok := slim.ToInt64(args[1])
 			if !ok {
-				return nil, tengo.ErrInvalidArgumentType{
+				return nil, slim.ErrInvalidArgumentType{
 					Name:     "second",
 					Expected: "int(compatible)",
 					Found:    args[1].TypeName(),
@@ -372,13 +372,13 @@ func osFuncASFmRE(
 	}
 }
 
-func osLookupEnv(args ...tengo.Object) (tengo.Object, error) {
+func osLookupEnv(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -386,21 +386,21 @@ func osLookupEnv(args ...tengo.Object) (tengo.Object, error) {
 	}
 	res, ok := os.LookupEnv(s1)
 	if !ok {
-		return tengo.FalseValue, nil
+		return slim.FalseValue, nil
 	}
-	if len(res) > tengo.MaxStringLen {
-		return nil, tengo.ErrStringLimit
+	if len(res) > slim.MaxStringLen {
+		return nil, slim.ErrStringLimit
 	}
-	return &tengo.String{Value: res}, nil
+	return &slim.String{Value: res}, nil
 }
 
-func osExpandEnv(args ...tengo.Object) (tengo.Object, error) {
+func osExpandEnv(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -417,25 +417,25 @@ func osExpandEnv(args ...tengo.Object) (tengo.Object, error) {
 		// this does not count the other texts that are not being replaced
 		// but the code checks the final length at the end
 		vlen += len(v)
-		if vlen > tengo.MaxStringLen {
+		if vlen > slim.MaxStringLen {
 			failed = true
 			return ""
 		}
 		return v
 	})
-	if failed || len(s) > tengo.MaxStringLen {
-		return nil, tengo.ErrStringLimit
+	if failed || len(s) > slim.MaxStringLen {
+		return nil, slim.ErrStringLimit
 	}
-	return &tengo.String{Value: s}, nil
+	return &slim.String{Value: s}, nil
 }
 
-func osExec(args ...tengo.Object) (tengo.Object, error) {
+func osExec(args ...slim.Object) (slim.Object, error) {
 	if len(args) == 0 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	name, ok := tengo.ToString(args[0])
+	name, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -443,9 +443,9 @@ func osExec(args ...tengo.Object) (tengo.Object, error) {
 	}
 	var execArgs []string
 	for idx, arg := range args[1:] {
-		execArg, ok := tengo.ToString(arg)
+		execArg, ok := slim.ToString(arg)
 		if !ok {
-			return nil, tengo.ErrInvalidArgumentType{
+			return nil, slim.ErrInvalidArgumentType{
 				Name:     fmt.Sprintf("args[%d]", idx),
 				Expected: "string(compatible)",
 				Found:    args[1+idx].TypeName(),
@@ -456,13 +456,13 @@ func osExec(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSExecCommand(exec.Command(name, execArgs...)), nil
 }
 
-func osFindProcess(args ...tengo.Object) (tengo.Object, error) {
+func osFindProcess(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 1 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	i1, ok := tengo.ToInt(args[0])
+	i1, ok := slim.ToInt(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -475,13 +475,13 @@ func osFindProcess(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSProcess(proc), nil
 }
 
-func osStartProcess(args ...tengo.Object) (tengo.Object, error) {
+func osStartProcess(args ...slim.Object) (slim.Object, error) {
 	if len(args) != 4 {
-		return nil, tengo.ErrWrongNumArguments
+		return nil, slim.ErrWrongNumArguments
 	}
-	name, ok := tengo.ToString(args[0])
+	name, ok := slim.ToString(args[0])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -490,27 +490,27 @@ func osStartProcess(args ...tengo.Object) (tengo.Object, error) {
 	var argv []string
 	var err error
 	switch arg1 := args[1].(type) {
-	case *tengo.Array:
+	case *slim.Array:
 		argv, err = stringArray(arg1.Value, "second")
 		if err != nil {
 			return nil, err
 		}
-	case *tengo.ImmutableArray:
+	case *slim.ImmutableArray:
 		argv, err = stringArray(arg1.Value, "second")
 		if err != nil {
 			return nil, err
 		}
 	default:
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "array",
 			Found:    arg1.TypeName(),
 		}
 	}
 
-	dir, ok := tengo.ToString(args[2])
+	dir, ok := slim.ToString(args[2])
 	if !ok {
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "third",
 			Expected: "string(compatible)",
 			Found:    args[2].TypeName(),
@@ -519,18 +519,18 @@ func osStartProcess(args ...tengo.Object) (tengo.Object, error) {
 
 	var env []string
 	switch arg3 := args[3].(type) {
-	case *tengo.Array:
+	case *slim.Array:
 		env, err = stringArray(arg3.Value, "fourth")
 		if err != nil {
 			return nil, err
 		}
-	case *tengo.ImmutableArray:
+	case *slim.ImmutableArray:
 		env, err = stringArray(arg3.Value, "fourth")
 		if err != nil {
 			return nil, err
 		}
 	default:
-		return nil, tengo.ErrInvalidArgumentType{
+		return nil, slim.ErrInvalidArgumentType{
 			Name:     "fourth",
 			Expected: "array",
 			Found:    arg3.TypeName(),
@@ -547,12 +547,12 @@ func osStartProcess(args ...tengo.Object) (tengo.Object, error) {
 	return makeOSProcess(proc), nil
 }
 
-func stringArray(arr []tengo.Object, argName string) ([]string, error) {
+func stringArray(arr []slim.Object, argName string) ([]string, error) {
 	var sarr []string
 	for idx, elem := range arr {
-		str, ok := elem.(*tengo.String)
+		str, ok := elem.(*slim.String)
 		if !ok {
-			return nil, tengo.ErrInvalidArgumentType{
+			return nil, slim.ErrInvalidArgumentType{
 				Name:     fmt.Sprintf("%s[%d]", argName, idx),
 				Expected: "string",
 				Found:    elem.TypeName(),

@@ -3,194 +3,194 @@ package stdlib
 import (
 	"time"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-var timesModule = map[string]tengo.Object{
-	"format_ansic":        &tengo.String{Value: time.ANSIC},
-	"format_unix_date":    &tengo.String{Value: time.UnixDate},
-	"format_ruby_date":    &tengo.String{Value: time.RubyDate},
-	"format_rfc822":       &tengo.String{Value: time.RFC822},
-	"format_rfc822z":      &tengo.String{Value: time.RFC822Z},
-	"format_rfc850":       &tengo.String{Value: time.RFC850},
-	"format_rfc1123":      &tengo.String{Value: time.RFC1123},
-	"format_rfc1123z":     &tengo.String{Value: time.RFC1123Z},
-	"format_rfc3339":      &tengo.String{Value: time.RFC3339},
-	"format_rfc3339_nano": &tengo.String{Value: time.RFC3339Nano},
-	"format_kitchen":      &tengo.String{Value: time.Kitchen},
-	"format_stamp":        &tengo.String{Value: time.Stamp},
-	"format_stamp_milli":  &tengo.String{Value: time.StampMilli},
-	"format_stamp_micro":  &tengo.String{Value: time.StampMicro},
-	"format_stamp_nano":   &tengo.String{Value: time.StampNano},
-	"nanosecond":          &tengo.Int{Value: int64(time.Nanosecond)},
-	"microsecond":         &tengo.Int{Value: int64(time.Microsecond)},
-	"millisecond":         &tengo.Int{Value: int64(time.Millisecond)},
-	"second":              &tengo.Int{Value: int64(time.Second)},
-	"minute":              &tengo.Int{Value: int64(time.Minute)},
-	"hour":                &tengo.Int{Value: int64(time.Hour)},
-	"january":             &tengo.Int{Value: int64(time.January)},
-	"february":            &tengo.Int{Value: int64(time.February)},
-	"march":               &tengo.Int{Value: int64(time.March)},
-	"april":               &tengo.Int{Value: int64(time.April)},
-	"may":                 &tengo.Int{Value: int64(time.May)},
-	"june":                &tengo.Int{Value: int64(time.June)},
-	"july":                &tengo.Int{Value: int64(time.July)},
-	"august":              &tengo.Int{Value: int64(time.August)},
-	"september":           &tengo.Int{Value: int64(time.September)},
-	"october":             &tengo.Int{Value: int64(time.October)},
-	"november":            &tengo.Int{Value: int64(time.November)},
-	"december":            &tengo.Int{Value: int64(time.December)},
-	"sleep": &tengo.UserFunction{
+var timesModule = map[string]slim.Object{
+	"format_ansic":        &slim.String{Value: time.ANSIC},
+	"format_unix_date":    &slim.String{Value: time.UnixDate},
+	"format_ruby_date":    &slim.String{Value: time.RubyDate},
+	"format_rfc822":       &slim.String{Value: time.RFC822},
+	"format_rfc822z":      &slim.String{Value: time.RFC822Z},
+	"format_rfc850":       &slim.String{Value: time.RFC850},
+	"format_rfc1123":      &slim.String{Value: time.RFC1123},
+	"format_rfc1123z":     &slim.String{Value: time.RFC1123Z},
+	"format_rfc3339":      &slim.String{Value: time.RFC3339},
+	"format_rfc3339_nano": &slim.String{Value: time.RFC3339Nano},
+	"format_kitchen":      &slim.String{Value: time.Kitchen},
+	"format_stamp":        &slim.String{Value: time.Stamp},
+	"format_stamp_milli":  &slim.String{Value: time.StampMilli},
+	"format_stamp_micro":  &slim.String{Value: time.StampMicro},
+	"format_stamp_nano":   &slim.String{Value: time.StampNano},
+	"nanosecond":          &slim.Int{Value: int64(time.Nanosecond)},
+	"microsecond":         &slim.Int{Value: int64(time.Microsecond)},
+	"millisecond":         &slim.Int{Value: int64(time.Millisecond)},
+	"second":              &slim.Int{Value: int64(time.Second)},
+	"minute":              &slim.Int{Value: int64(time.Minute)},
+	"hour":                &slim.Int{Value: int64(time.Hour)},
+	"january":             &slim.Int{Value: int64(time.January)},
+	"february":            &slim.Int{Value: int64(time.February)},
+	"march":               &slim.Int{Value: int64(time.March)},
+	"april":               &slim.Int{Value: int64(time.April)},
+	"may":                 &slim.Int{Value: int64(time.May)},
+	"june":                &slim.Int{Value: int64(time.June)},
+	"july":                &slim.Int{Value: int64(time.July)},
+	"august":              &slim.Int{Value: int64(time.August)},
+	"september":           &slim.Int{Value: int64(time.September)},
+	"october":             &slim.Int{Value: int64(time.October)},
+	"november":            &slim.Int{Value: int64(time.November)},
+	"december":            &slim.Int{Value: int64(time.December)},
+	"sleep": &slim.UserFunction{
 		Name:  "sleep",
 		Value: timesSleep,
 	}, // sleep(int)
-	"parse_duration": &tengo.UserFunction{
+	"parse_duration": &slim.UserFunction{
 		Name:  "parse_duration",
 		Value: timesParseDuration,
 	}, // parse_duration(str) => int
-	"since": &tengo.UserFunction{
+	"since": &slim.UserFunction{
 		Name:  "since",
 		Value: timesSince,
 	}, // since(time) => int
-	"until": &tengo.UserFunction{
+	"until": &slim.UserFunction{
 		Name:  "until",
 		Value: timesUntil,
 	}, // until(time) => int
-	"duration_hours": &tengo.UserFunction{
+	"duration_hours": &slim.UserFunction{
 		Name:  "duration_hours",
 		Value: timesDurationHours,
 	}, // duration_hours(int) => float
-	"duration_minutes": &tengo.UserFunction{
+	"duration_minutes": &slim.UserFunction{
 		Name:  "duration_minutes",
 		Value: timesDurationMinutes,
 	}, // duration_minutes(int) => float
-	"duration_nanoseconds": &tengo.UserFunction{
+	"duration_nanoseconds": &slim.UserFunction{
 		Name:  "duration_nanoseconds",
 		Value: timesDurationNanoseconds,
 	}, // duration_nanoseconds(int) => int
-	"duration_seconds": &tengo.UserFunction{
+	"duration_seconds": &slim.UserFunction{
 		Name:  "duration_seconds",
 		Value: timesDurationSeconds,
 	}, // duration_seconds(int) => float
-	"duration_string": &tengo.UserFunction{
+	"duration_string": &slim.UserFunction{
 		Name:  "duration_string",
 		Value: timesDurationString,
 	}, // duration_string(int) => string
-	"month_string": &tengo.UserFunction{
+	"month_string": &slim.UserFunction{
 		Name:  "month_string",
 		Value: timesMonthString,
 	}, // month_string(int) => string
-	"date": &tengo.UserFunction{
+	"date": &slim.UserFunction{
 		Name:  "date",
 		Value: timesDate,
 	}, // date(year, month, day, hour, min, sec, nsec) => time
-	"now": &tengo.UserFunction{
+	"now": &slim.UserFunction{
 		Name:  "now",
 		Value: timesNow,
 	}, // now() => time
-	"parse": &tengo.UserFunction{
+	"parse": &slim.UserFunction{
 		Name:  "parse",
 		Value: timesParse,
 	}, // parse(format, str) => time
-	"unix": &tengo.UserFunction{
+	"unix": &slim.UserFunction{
 		Name:  "unix",
 		Value: timesUnix,
 	}, // unix(sec, nsec) => time
-	"add": &tengo.UserFunction{
+	"add": &slim.UserFunction{
 		Name:  "add",
 		Value: timesAdd,
 	}, // add(time, int) => time
-	"add_date": &tengo.UserFunction{
+	"add_date": &slim.UserFunction{
 		Name:  "add_date",
 		Value: timesAddDate,
 	}, // add_date(time, years, months, days) => time
-	"sub": &tengo.UserFunction{
+	"sub": &slim.UserFunction{
 		Name:  "sub",
 		Value: timesSub,
 	}, // sub(t time, u time) => int
-	"after": &tengo.UserFunction{
+	"after": &slim.UserFunction{
 		Name:  "after",
 		Value: timesAfter,
 	}, // after(t time, u time) => bool
-	"before": &tengo.UserFunction{
+	"before": &slim.UserFunction{
 		Name:  "before",
 		Value: timesBefore,
 	}, // before(t time, u time) => bool
-	"time_year": &tengo.UserFunction{
+	"time_year": &slim.UserFunction{
 		Name:  "time_year",
 		Value: timesTimeYear,
 	}, // time_year(time) => int
-	"time_month": &tengo.UserFunction{
+	"time_month": &slim.UserFunction{
 		Name:  "time_month",
 		Value: timesTimeMonth,
 	}, // time_month(time) => int
-	"time_day": &tengo.UserFunction{
+	"time_day": &slim.UserFunction{
 		Name:  "time_day",
 		Value: timesTimeDay,
 	}, // time_day(time) => int
-	"time_weekday": &tengo.UserFunction{
+	"time_weekday": &slim.UserFunction{
 		Name:  "time_weekday",
 		Value: timesTimeWeekday,
 	}, // time_weekday(time) => int
-	"time_hour": &tengo.UserFunction{
+	"time_hour": &slim.UserFunction{
 		Name:  "time_hour",
 		Value: timesTimeHour,
 	}, // time_hour(time) => int
-	"time_minute": &tengo.UserFunction{
+	"time_minute": &slim.UserFunction{
 		Name:  "time_minute",
 		Value: timesTimeMinute,
 	}, // time_minute(time) => int
-	"time_second": &tengo.UserFunction{
+	"time_second": &slim.UserFunction{
 		Name:  "time_second",
 		Value: timesTimeSecond,
 	}, // time_second(time) => int
-	"time_nanosecond": &tengo.UserFunction{
+	"time_nanosecond": &slim.UserFunction{
 		Name:  "time_nanosecond",
 		Value: timesTimeNanosecond,
 	}, // time_nanosecond(time) => int
-	"time_unix": &tengo.UserFunction{
+	"time_unix": &slim.UserFunction{
 		Name:  "time_unix",
 		Value: timesTimeUnix,
 	}, // time_unix(time) => int
-	"time_unix_nano": &tengo.UserFunction{
+	"time_unix_nano": &slim.UserFunction{
 		Name:  "time_unix_nano",
 		Value: timesTimeUnixNano,
 	}, // time_unix_nano(time) => int
-	"time_format": &tengo.UserFunction{
+	"time_format": &slim.UserFunction{
 		Name:  "time_format",
 		Value: timesTimeFormat,
 	}, // time_format(time, format) => string
-	"time_location": &tengo.UserFunction{
+	"time_location": &slim.UserFunction{
 		Name:  "time_location",
 		Value: timesTimeLocation,
 	}, // time_location(time) => string
-	"time_string": &tengo.UserFunction{
+	"time_string": &slim.UserFunction{
 		Name:  "time_string",
 		Value: timesTimeString,
 	}, // time_string(time) => string
-	"is_zero": &tengo.UserFunction{
+	"is_zero": &slim.UserFunction{
 		Name:  "is_zero",
 		Value: timesIsZero,
 	}, // is_zero(time) => bool
-	"to_local": &tengo.UserFunction{
+	"to_local": &slim.UserFunction{
 		Name:  "to_local",
 		Value: timesToLocal,
 	}, // to_local(time) => time
-	"to_utc": &tengo.UserFunction{
+	"to_utc": &slim.UserFunction{
 		Name:  "to_utc",
 		Value: timesToUTC,
 	}, // to_utc(time) => time
 }
 
-func timesSleep(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesSleep(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -199,23 +199,23 @@ func timesSleep(args ...tengo.Object) (ret tengo.Object, err error) {
 	}
 
 	time.Sleep(time.Duration(i1))
-	ret = tengo.UndefinedValue
+	ret = slim.UndefinedValue
 
 	return
 }
 
-func timesParseDuration(args ...tengo.Object) (
-	ret tengo.Object,
+func timesParseDuration(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -229,23 +229,23 @@ func timesParseDuration(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(dur)}
+	ret = &slim.Int{Value: int64(dur)}
 
 	return
 }
 
-func timesSince(args ...tengo.Object) (
-	ret tengo.Object,
+func timesSince(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -253,23 +253,23 @@ func timesSince(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(time.Since(t1))}
+	ret = &slim.Int{Value: int64(time.Since(t1))}
 
 	return
 }
 
-func timesUntil(args ...tengo.Object) (
-	ret tengo.Object,
+func timesUntil(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -277,23 +277,23 @@ func timesUntil(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(time.Until(t1))}
+	ret = &slim.Int{Value: int64(time.Until(t1))}
 
 	return
 }
 
-func timesDurationHours(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDurationHours(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -301,23 +301,23 @@ func timesDurationHours(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Float{Value: time.Duration(i1).Hours()}
+	ret = &slim.Float{Value: time.Duration(i1).Hours()}
 
 	return
 }
 
-func timesDurationMinutes(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDurationMinutes(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -325,23 +325,23 @@ func timesDurationMinutes(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Float{Value: time.Duration(i1).Minutes()}
+	ret = &slim.Float{Value: time.Duration(i1).Minutes()}
 
 	return
 }
 
-func timesDurationNanoseconds(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDurationNanoseconds(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -349,23 +349,23 @@ func timesDurationNanoseconds(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: time.Duration(i1).Nanoseconds()}
+	ret = &slim.Int{Value: time.Duration(i1).Nanoseconds()}
 
 	return
 }
 
-func timesDurationSeconds(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDurationSeconds(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -373,23 +373,23 @@ func timesDurationSeconds(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Float{Value: time.Duration(i1).Seconds()}
+	ret = &slim.Float{Value: time.Duration(i1).Seconds()}
 
 	return
 }
 
-func timesDurationString(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDurationString(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -397,23 +397,23 @@ func timesDurationString(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.String{Value: time.Duration(i1).String()}
+	ret = &slim.String{Value: time.Duration(i1).String()}
 
 	return
 }
 
-func timesMonthString(args ...tengo.Object) (
-	ret tengo.Object,
+func timesMonthString(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -421,77 +421,77 @@ func timesMonthString(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.String{Value: time.Month(i1).String()}
+	ret = &slim.String{Value: time.Month(i1).String()}
 
 	return
 }
 
-func timesDate(args ...tengo.Object) (
-	ret tengo.Object,
+func timesDate(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 7 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt(args[0])
+	i1, ok := slim.ToInt(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
 		}
 		return
 	}
-	i2, ok := tengo.ToInt(args[1])
+	i2, ok := slim.ToInt(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "int(compatible)",
 			Found:    args[1].TypeName(),
 		}
 		return
 	}
-	i3, ok := tengo.ToInt(args[2])
+	i3, ok := slim.ToInt(args[2])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "third",
 			Expected: "int(compatible)",
 			Found:    args[2].TypeName(),
 		}
 		return
 	}
-	i4, ok := tengo.ToInt(args[3])
+	i4, ok := slim.ToInt(args[3])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "fourth",
 			Expected: "int(compatible)",
 			Found:    args[3].TypeName(),
 		}
 		return
 	}
-	i5, ok := tengo.ToInt(args[4])
+	i5, ok := slim.ToInt(args[4])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "fifth",
 			Expected: "int(compatible)",
 			Found:    args[4].TypeName(),
 		}
 		return
 	}
-	i6, ok := tengo.ToInt(args[5])
+	i6, ok := slim.ToInt(args[5])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "sixth",
 			Expected: "int(compatible)",
 			Found:    args[5].TypeName(),
 		}
 		return
 	}
-	i7, ok := tengo.ToInt(args[6])
+	i7, ok := slim.ToInt(args[6])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "seventh",
 			Expected: "int(compatible)",
 			Found:    args[6].TypeName(),
@@ -499,7 +499,7 @@ func timesDate(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Time{
+	ret = &slim.Time{
 		Value: time.Date(i1,
 			time.Month(i2), i3, i4, i5, i6, i7, time.Now().Location()),
 	}
@@ -507,26 +507,26 @@ func timesDate(args ...tengo.Object) (
 	return
 }
 
-func timesNow(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesNow(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 0 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	ret = &tengo.Time{Value: time.Now()}
+	ret = &slim.Time{Value: time.Now()}
 
 	return
 }
 
-func timesParse(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesParse(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	s1, ok := tengo.ToString(args[0])
+	s1, ok := slim.ToString(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "string(compatible)",
 			Found:    args[0].TypeName(),
@@ -534,9 +534,9 @@ func timesParse(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	s2, ok := tengo.ToString(args[1])
+	s2, ok := slim.ToString(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "string(compatible)",
 			Found:    args[1].TypeName(),
@@ -550,20 +550,20 @@ func timesParse(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: parsed}
+	ret = &slim.Time{Value: parsed}
 
 	return
 }
 
-func timesUnix(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesUnix(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	i1, ok := tengo.ToInt64(args[0])
+	i1, ok := slim.ToInt64(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "int(compatible)",
 			Found:    args[0].TypeName(),
@@ -571,9 +571,9 @@ func timesUnix(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	i2, ok := tengo.ToInt64(args[1])
+	i2, ok := slim.ToInt64(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "int(compatible)",
 			Found:    args[1].TypeName(),
@@ -581,20 +581,20 @@ func timesUnix(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: time.Unix(i1, i2)}
+	ret = &slim.Time{Value: time.Unix(i1, i2)}
 
 	return
 }
 
-func timesAdd(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesAdd(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -602,9 +602,9 @@ func timesAdd(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	i2, ok := tengo.ToInt64(args[1])
+	i2, ok := slim.ToInt64(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "int(compatible)",
 			Found:    args[1].TypeName(),
@@ -612,20 +612,20 @@ func timesAdd(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: t1.Add(time.Duration(i2))}
+	ret = &slim.Time{Value: t1.Add(time.Duration(i2))}
 
 	return
 }
 
-func timesSub(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesSub(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -633,9 +633,9 @@ func timesSub(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	t2, ok := tengo.ToTime(args[1])
+	t2, ok := slim.ToTime(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "time(compatible)",
 			Found:    args[1].TypeName(),
@@ -643,20 +643,20 @@ func timesSub(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Sub(t2))}
+	ret = &slim.Int{Value: int64(t1.Sub(t2))}
 
 	return
 }
 
-func timesAddDate(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesAddDate(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 4 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -664,9 +664,9 @@ func timesAddDate(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	i2, ok := tengo.ToInt(args[1])
+	i2, ok := slim.ToInt(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "int(compatible)",
 			Found:    args[1].TypeName(),
@@ -674,9 +674,9 @@ func timesAddDate(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	i3, ok := tengo.ToInt(args[2])
+	i3, ok := slim.ToInt(args[2])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "third",
 			Expected: "int(compatible)",
 			Found:    args[2].TypeName(),
@@ -684,9 +684,9 @@ func timesAddDate(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	i4, ok := tengo.ToInt(args[3])
+	i4, ok := slim.ToInt(args[3])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "fourth",
 			Expected: "int(compatible)",
 			Found:    args[3].TypeName(),
@@ -694,20 +694,20 @@ func timesAddDate(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: t1.AddDate(i2, i3, i4)}
+	ret = &slim.Time{Value: t1.AddDate(i2, i3, i4)}
 
 	return
 }
 
-func timesAfter(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesAfter(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -715,9 +715,9 @@ func timesAfter(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	t2, ok := tengo.ToTime(args[1])
+	t2, ok := slim.ToTime(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "time(compatible)",
 			Found:    args[1].TypeName(),
@@ -726,23 +726,23 @@ func timesAfter(args ...tengo.Object) (ret tengo.Object, err error) {
 	}
 
 	if t1.After(t2) {
-		ret = tengo.TrueValue
+		ret = slim.TrueValue
 	} else {
-		ret = tengo.FalseValue
+		ret = slim.FalseValue
 	}
 
 	return
 }
 
-func timesBefore(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesBefore(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -750,9 +750,9 @@ func timesBefore(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	t2, ok := tengo.ToTime(args[1])
+	t2, ok := slim.ToTime(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -761,23 +761,23 @@ func timesBefore(args ...tengo.Object) (ret tengo.Object, err error) {
 	}
 
 	if t1.Before(t2) {
-		ret = tengo.TrueValue
+		ret = slim.TrueValue
 	} else {
-		ret = tengo.FalseValue
+		ret = slim.FalseValue
 	}
 
 	return
 }
 
-func timesTimeYear(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeYear(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -785,20 +785,20 @@ func timesTimeYear(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Year())}
+	ret = &slim.Int{Value: int64(t1.Year())}
 
 	return
 }
 
-func timesTimeMonth(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeMonth(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -806,20 +806,20 @@ func timesTimeMonth(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Month())}
+	ret = &slim.Int{Value: int64(t1.Month())}
 
 	return
 }
 
-func timesTimeDay(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeDay(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -827,20 +827,20 @@ func timesTimeDay(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Day())}
+	ret = &slim.Int{Value: int64(t1.Day())}
 
 	return
 }
 
-func timesTimeWeekday(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeWeekday(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -848,20 +848,20 @@ func timesTimeWeekday(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Weekday())}
+	ret = &slim.Int{Value: int64(t1.Weekday())}
 
 	return
 }
 
-func timesTimeHour(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeHour(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -869,20 +869,20 @@ func timesTimeHour(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Hour())}
+	ret = &slim.Int{Value: int64(t1.Hour())}
 
 	return
 }
 
-func timesTimeMinute(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeMinute(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -890,20 +890,20 @@ func timesTimeMinute(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Minute())}
+	ret = &slim.Int{Value: int64(t1.Minute())}
 
 	return
 }
 
-func timesTimeSecond(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeSecond(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -911,23 +911,23 @@ func timesTimeSecond(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Second())}
+	ret = &slim.Int{Value: int64(t1.Second())}
 
 	return
 }
 
-func timesTimeNanosecond(args ...tengo.Object) (
-	ret tengo.Object,
+func timesTimeNanosecond(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -935,20 +935,20 @@ func timesTimeNanosecond(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: int64(t1.Nanosecond())}
+	ret = &slim.Int{Value: int64(t1.Nanosecond())}
 
 	return
 }
 
-func timesTimeUnix(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeUnix(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -956,23 +956,23 @@ func timesTimeUnix(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Int{Value: t1.Unix()}
+	ret = &slim.Int{Value: t1.Unix()}
 
 	return
 }
 
-func timesTimeUnixNano(args ...tengo.Object) (
-	ret tengo.Object,
+func timesTimeUnixNano(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -980,20 +980,20 @@ func timesTimeUnixNano(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.Int{Value: t1.UnixNano()}
+	ret = &slim.Int{Value: t1.UnixNano()}
 
 	return
 }
 
-func timesTimeFormat(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeFormat(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 2 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1001,9 +1001,9 @@ func timesTimeFormat(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	s2, ok := tengo.ToString(args[1])
+	s2, ok := slim.ToString(args[1])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "second",
 			Expected: "string(compatible)",
 			Found:    args[1].TypeName(),
@@ -1012,25 +1012,25 @@ func timesTimeFormat(args ...tengo.Object) (ret tengo.Object, err error) {
 	}
 
 	s := t1.Format(s2)
-	if len(s) > tengo.MaxStringLen {
+	if len(s) > slim.MaxStringLen {
 
-		return nil, tengo.ErrStringLimit
+		return nil, slim.ErrStringLimit
 	}
 
-	ret = &tengo.String{Value: s}
+	ret = &slim.String{Value: s}
 
 	return
 }
 
-func timesIsZero(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesIsZero(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1039,23 +1039,23 @@ func timesIsZero(args ...tengo.Object) (ret tengo.Object, err error) {
 	}
 
 	if t1.IsZero() {
-		ret = tengo.TrueValue
+		ret = slim.TrueValue
 	} else {
-		ret = tengo.FalseValue
+		ret = slim.FalseValue
 	}
 
 	return
 }
 
-func timesToLocal(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesToLocal(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1063,20 +1063,20 @@ func timesToLocal(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: t1.Local()}
+	ret = &slim.Time{Value: t1.Local()}
 
 	return
 }
 
-func timesToUTC(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesToUTC(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1084,23 +1084,23 @@ func timesToUTC(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.Time{Value: t1.UTC()}
+	ret = &slim.Time{Value: t1.UTC()}
 
 	return
 }
 
-func timesTimeLocation(args ...tengo.Object) (
-	ret tengo.Object,
+func timesTimeLocation(args ...slim.Object) (
+	ret slim.Object,
 	err error,
 ) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1108,20 +1108,20 @@ func timesTimeLocation(args ...tengo.Object) (
 		return
 	}
 
-	ret = &tengo.String{Value: t1.Location().String()}
+	ret = &slim.String{Value: t1.Location().String()}
 
 	return
 }
 
-func timesTimeString(args ...tengo.Object) (ret tengo.Object, err error) {
+func timesTimeString(args ...slim.Object) (ret slim.Object, err error) {
 	if len(args) != 1 {
-		err = tengo.ErrWrongNumArguments
+		err = slim.ErrWrongNumArguments
 		return
 	}
 
-	t1, ok := tengo.ToTime(args[0])
+	t1, ok := slim.ToTime(args[0])
 	if !ok {
-		err = tengo.ErrInvalidArgumentType{
+		err = slim.ErrInvalidArgumentType{
 			Name:     "first",
 			Expected: "time(compatible)",
 			Found:    args[0].TypeName(),
@@ -1129,7 +1129,7 @@ func timesTimeString(args ...tengo.Object) (ret tengo.Object, err error) {
 		return
 	}
 
-	ret = &tengo.String{Value: t1.String()}
+	ret = &slim.String{Value: t1.String()}
 
 	return
 }

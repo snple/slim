@@ -1,13 +1,13 @@
-package tengo_test
+package slim_test
 
 import (
 	"bytes"
 	"testing"
 	"time"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/parser"
-	"github.com/d5/tengo/v2/require"
+	"github.com/snple/slim"
+	"github.com/snple/slim/parser"
+	"github.com/snple/slim/require"
 )
 
 type srcfile struct {
@@ -20,108 +20,108 @@ func TestBytecode(t *testing.T) {
 
 	testBytecodeSerialization(t, bytecode(
 		concatInsts(), objectsArray(
-			&tengo.Char{Value: 'y'},
-			&tengo.Float{Value: 93.11},
+			&slim.Char{Value: 'y'},
+			&slim.Float{Value: 93.11},
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpSetLocal, 0),
-				tengo.MakeInstruction(parser.OpGetGlobal, 0),
-				tengo.MakeInstruction(parser.OpGetFree, 0)),
-			&tengo.Float{Value: 39.2},
-			&tengo.Int{Value: 192},
-			&tengo.String{Value: "bar"})))
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpSetLocal, 0),
+				slim.MakeInstruction(parser.OpGetGlobal, 0),
+				slim.MakeInstruction(parser.OpGetFree, 0)),
+			&slim.Float{Value: 39.2},
+			&slim.Int{Value: 192},
+			&slim.String{Value: "bar"})))
 
 	testBytecodeSerialization(t, bytecodeFileSet(
 		concatInsts(
-			tengo.MakeInstruction(parser.OpConstant, 0),
-			tengo.MakeInstruction(parser.OpSetGlobal, 0),
-			tengo.MakeInstruction(parser.OpConstant, 6),
-			tengo.MakeInstruction(parser.OpPop)),
+			slim.MakeInstruction(parser.OpConstant, 0),
+			slim.MakeInstruction(parser.OpSetGlobal, 0),
+			slim.MakeInstruction(parser.OpConstant, 6),
+			slim.MakeInstruction(parser.OpPop)),
 		objectsArray(
-			&tengo.Int{Value: 55},
-			&tengo.Int{Value: 66},
-			&tengo.Int{Value: 77},
-			&tengo.Int{Value: 88},
-			&tengo.ImmutableMap{
-				Value: map[string]tengo.Object{
-					"array": &tengo.ImmutableArray{
-						Value: []tengo.Object{
-							&tengo.Int{Value: 1},
-							&tengo.Int{Value: 2},
-							&tengo.Int{Value: 3},
-							tengo.TrueValue,
-							tengo.FalseValue,
-							tengo.UndefinedValue,
+			&slim.Int{Value: 55},
+			&slim.Int{Value: 66},
+			&slim.Int{Value: 77},
+			&slim.Int{Value: 88},
+			&slim.ImmutableMap{
+				Value: map[string]slim.Object{
+					"array": &slim.ImmutableArray{
+						Value: []slim.Object{
+							&slim.Int{Value: 1},
+							&slim.Int{Value: 2},
+							&slim.Int{Value: 3},
+							slim.TrueValue,
+							slim.FalseValue,
+							slim.UndefinedValue,
 						},
 					},
-					"true":  tengo.TrueValue,
-					"false": tengo.FalseValue,
-					"bytes": &tengo.Bytes{Value: make([]byte, 16)},
-					"char":  &tengo.Char{Value: 'Y'},
-					"error": &tengo.Error{Value: &tengo.String{
+					"true":  slim.TrueValue,
+					"false": slim.FalseValue,
+					"bytes": &slim.Bytes{Value: make([]byte, 16)},
+					"char":  &slim.Char{Value: 'Y'},
+					"error": &slim.Error{Value: &slim.String{
 						Value: "some error",
 					}},
-					"float": &tengo.Float{Value: -19.84},
-					"immutable_array": &tengo.ImmutableArray{
-						Value: []tengo.Object{
-							&tengo.Int{Value: 1},
-							&tengo.Int{Value: 2},
-							&tengo.Int{Value: 3},
-							tengo.TrueValue,
-							tengo.FalseValue,
-							tengo.UndefinedValue,
+					"float": &slim.Float{Value: -19.84},
+					"immutable_array": &slim.ImmutableArray{
+						Value: []slim.Object{
+							&slim.Int{Value: 1},
+							&slim.Int{Value: 2},
+							&slim.Int{Value: 3},
+							slim.TrueValue,
+							slim.FalseValue,
+							slim.UndefinedValue,
 						},
 					},
-					"immutable_map": &tengo.ImmutableMap{
-						Value: map[string]tengo.Object{
-							"a": &tengo.Int{Value: 1},
-							"b": &tengo.Int{Value: 2},
-							"c": &tengo.Int{Value: 3},
-							"d": tengo.TrueValue,
-							"e": tengo.FalseValue,
-							"f": tengo.UndefinedValue,
+					"immutable_map": &slim.ImmutableMap{
+						Value: map[string]slim.Object{
+							"a": &slim.Int{Value: 1},
+							"b": &slim.Int{Value: 2},
+							"c": &slim.Int{Value: 3},
+							"d": slim.TrueValue,
+							"e": slim.FalseValue,
+							"f": slim.UndefinedValue,
 						},
 					},
-					"int": &tengo.Int{Value: 91},
-					"map": &tengo.Map{
-						Value: map[string]tengo.Object{
-							"a": &tengo.Int{Value: 1},
-							"b": &tengo.Int{Value: 2},
-							"c": &tengo.Int{Value: 3},
-							"d": tengo.TrueValue,
-							"e": tengo.FalseValue,
-							"f": tengo.UndefinedValue,
+					"int": &slim.Int{Value: 91},
+					"map": &slim.Map{
+						Value: map[string]slim.Object{
+							"a": &slim.Int{Value: 1},
+							"b": &slim.Int{Value: 2},
+							"c": &slim.Int{Value: 3},
+							"d": slim.TrueValue,
+							"e": slim.FalseValue,
+							"f": slim.UndefinedValue,
 						},
 					},
-					"string":    &tengo.String{Value: "foo bar"},
-					"time":      &tengo.Time{Value: time.Now()},
-					"undefined": tengo.UndefinedValue,
+					"string":    &slim.String{Value: "foo bar"},
+					"time":      &slim.Time{Value: time.Now()},
+					"undefined": slim.UndefinedValue,
 				},
 			},
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpSetLocal, 0),
-				tengo.MakeInstruction(parser.OpGetGlobal, 0),
-				tengo.MakeInstruction(parser.OpGetFree, 0),
-				tengo.MakeInstruction(parser.OpBinaryOp, 11),
-				tengo.MakeInstruction(parser.OpGetFree, 1),
-				tengo.MakeInstruction(parser.OpBinaryOp, 11),
-				tengo.MakeInstruction(parser.OpGetLocal, 0),
-				tengo.MakeInstruction(parser.OpBinaryOp, 11),
-				tengo.MakeInstruction(parser.OpReturn, 1)),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpSetLocal, 0),
+				slim.MakeInstruction(parser.OpGetGlobal, 0),
+				slim.MakeInstruction(parser.OpGetFree, 0),
+				slim.MakeInstruction(parser.OpBinaryOp, 11),
+				slim.MakeInstruction(parser.OpGetFree, 1),
+				slim.MakeInstruction(parser.OpBinaryOp, 11),
+				slim.MakeInstruction(parser.OpGetLocal, 0),
+				slim.MakeInstruction(parser.OpBinaryOp, 11),
+				slim.MakeInstruction(parser.OpReturn, 1)),
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpSetLocal, 0),
-				tengo.MakeInstruction(parser.OpGetFree, 0),
-				tengo.MakeInstruction(parser.OpGetLocal, 0),
-				tengo.MakeInstruction(parser.OpClosure, 4, 2),
-				tengo.MakeInstruction(parser.OpReturn, 1)),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpSetLocal, 0),
+				slim.MakeInstruction(parser.OpGetFree, 0),
+				slim.MakeInstruction(parser.OpGetLocal, 0),
+				slim.MakeInstruction(parser.OpClosure, 4, 2),
+				slim.MakeInstruction(parser.OpReturn, 1)),
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpSetLocal, 0),
-				tengo.MakeInstruction(parser.OpGetLocal, 0),
-				tengo.MakeInstruction(parser.OpClosure, 5, 1),
-				tengo.MakeInstruction(parser.OpReturn, 1))),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpSetLocal, 0),
+				slim.MakeInstruction(parser.OpGetLocal, 0),
+				slim.MakeInstruction(parser.OpClosure, 5, 1),
+				slim.MakeInstruction(parser.OpReturn, 1))),
 		fileSet(srcfile{name: "file1", size: 100},
 			srcfile{name: "file2", size: 200})))
 }
@@ -130,125 +130,125 @@ func TestBytecode_RemoveDuplicates(t *testing.T) {
 	testBytecodeRemoveDuplicates(t,
 		bytecode(
 			concatInsts(), objectsArray(
-				&tengo.Char{Value: 'y'},
-				&tengo.Float{Value: 93.11},
+				&slim.Char{Value: 'y'},
+				&slim.Float{Value: 93.11},
 				compiledFunction(1, 0,
-					tengo.MakeInstruction(parser.OpConstant, 3),
-					tengo.MakeInstruction(parser.OpSetLocal, 0),
-					tengo.MakeInstruction(parser.OpGetGlobal, 0),
-					tengo.MakeInstruction(parser.OpGetFree, 0)),
-				&tengo.Float{Value: 39.2},
-				&tengo.Int{Value: 192},
-				&tengo.String{Value: "bar"})),
+					slim.MakeInstruction(parser.OpConstant, 3),
+					slim.MakeInstruction(parser.OpSetLocal, 0),
+					slim.MakeInstruction(parser.OpGetGlobal, 0),
+					slim.MakeInstruction(parser.OpGetFree, 0)),
+				&slim.Float{Value: 39.2},
+				&slim.Int{Value: 192},
+				&slim.String{Value: "bar"})),
 		bytecode(
 			concatInsts(), objectsArray(
-				&tengo.Char{Value: 'y'},
-				&tengo.Float{Value: 93.11},
+				&slim.Char{Value: 'y'},
+				&slim.Float{Value: 93.11},
 				compiledFunction(1, 0,
-					tengo.MakeInstruction(parser.OpConstant, 3),
-					tengo.MakeInstruction(parser.OpSetLocal, 0),
-					tengo.MakeInstruction(parser.OpGetGlobal, 0),
-					tengo.MakeInstruction(parser.OpGetFree, 0)),
-				&tengo.Float{Value: 39.2},
-				&tengo.Int{Value: 192},
-				&tengo.String{Value: "bar"})))
+					slim.MakeInstruction(parser.OpConstant, 3),
+					slim.MakeInstruction(parser.OpSetLocal, 0),
+					slim.MakeInstruction(parser.OpGetGlobal, 0),
+					slim.MakeInstruction(parser.OpGetFree, 0)),
+				&slim.Float{Value: 39.2},
+				&slim.Int{Value: 192},
+				&slim.String{Value: "bar"})))
 
 	testBytecodeRemoveDuplicates(t,
 		bytecode(
 			concatInsts(
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpConstant, 4),
-				tengo.MakeInstruction(parser.OpConstant, 5),
-				tengo.MakeInstruction(parser.OpConstant, 6),
-				tengo.MakeInstruction(parser.OpConstant, 7),
-				tengo.MakeInstruction(parser.OpConstant, 8),
-				tengo.MakeInstruction(parser.OpClosure, 4, 1)),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpConstant, 4),
+				slim.MakeInstruction(parser.OpConstant, 5),
+				slim.MakeInstruction(parser.OpConstant, 6),
+				slim.MakeInstruction(parser.OpConstant, 7),
+				slim.MakeInstruction(parser.OpConstant, 8),
+				slim.MakeInstruction(parser.OpClosure, 4, 1)),
 			objectsArray(
-				&tengo.Int{Value: 1},
-				&tengo.Float{Value: 2.0},
-				&tengo.Char{Value: '3'},
-				&tengo.String{Value: "four"},
+				&slim.Int{Value: 1},
+				&slim.Float{Value: 2.0},
+				&slim.Char{Value: '3'},
+				&slim.String{Value: "four"},
 				compiledFunction(1, 0,
-					tengo.MakeInstruction(parser.OpConstant, 3),
-					tengo.MakeInstruction(parser.OpConstant, 7),
-					tengo.MakeInstruction(parser.OpSetLocal, 0),
-					tengo.MakeInstruction(parser.OpGetGlobal, 0),
-					tengo.MakeInstruction(parser.OpGetFree, 0)),
-				&tengo.Int{Value: 1},
-				&tengo.Float{Value: 2.0},
-				&tengo.Char{Value: '3'},
-				&tengo.String{Value: "four"})),
+					slim.MakeInstruction(parser.OpConstant, 3),
+					slim.MakeInstruction(parser.OpConstant, 7),
+					slim.MakeInstruction(parser.OpSetLocal, 0),
+					slim.MakeInstruction(parser.OpGetGlobal, 0),
+					slim.MakeInstruction(parser.OpGetFree, 0)),
+				&slim.Int{Value: 1},
+				&slim.Float{Value: 2.0},
+				&slim.Char{Value: '3'},
+				&slim.String{Value: "four"})),
 		bytecode(
 			concatInsts(
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpConstant, 4),
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpClosure, 4, 1)),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpConstant, 4),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpClosure, 4, 1)),
 			objectsArray(
-				&tengo.Int{Value: 1},
-				&tengo.Float{Value: 2.0},
-				&tengo.Char{Value: '3'},
-				&tengo.String{Value: "four"},
+				&slim.Int{Value: 1},
+				&slim.Float{Value: 2.0},
+				&slim.Char{Value: '3'},
+				&slim.String{Value: "four"},
 				compiledFunction(1, 0,
-					tengo.MakeInstruction(parser.OpConstant, 3),
-					tengo.MakeInstruction(parser.OpConstant, 2),
-					tengo.MakeInstruction(parser.OpSetLocal, 0),
-					tengo.MakeInstruction(parser.OpGetGlobal, 0),
-					tengo.MakeInstruction(parser.OpGetFree, 0)))))
+					slim.MakeInstruction(parser.OpConstant, 3),
+					slim.MakeInstruction(parser.OpConstant, 2),
+					slim.MakeInstruction(parser.OpSetLocal, 0),
+					slim.MakeInstruction(parser.OpGetGlobal, 0),
+					slim.MakeInstruction(parser.OpGetFree, 0)))))
 
 	testBytecodeRemoveDuplicates(t,
 		bytecode(
 			concatInsts(
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpConstant, 4)),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpConstant, 4)),
 			objectsArray(
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2},
-				&tengo.Int{Value: 3},
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 3})),
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2},
+				&slim.Int{Value: 3},
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 3})),
 		bytecode(
 			concatInsts(
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpConstant, 0),
-				tengo.MakeInstruction(parser.OpConstant, 2)),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpConstant, 0),
+				slim.MakeInstruction(parser.OpConstant, 2)),
 			objectsArray(
-				&tengo.Int{Value: 1},
-				&tengo.Int{Value: 2},
-				&tengo.Int{Value: 3})))
+				&slim.Int{Value: 1},
+				&slim.Int{Value: 2},
+				&slim.Int{Value: 3})))
 }
 
 func TestBytecode_CountObjects(t *testing.T) {
 	b := bytecode(
 		concatInsts(),
 		objectsArray(
-			&tengo.Int{Value: 55},
-			&tengo.Int{Value: 66},
-			&tengo.Int{Value: 77},
-			&tengo.Int{Value: 88},
+			&slim.Int{Value: 55},
+			&slim.Int{Value: 66},
+			&slim.Int{Value: 77},
+			&slim.Int{Value: 88},
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 3),
-				tengo.MakeInstruction(parser.OpReturn, 1)),
+				slim.MakeInstruction(parser.OpConstant, 3),
+				slim.MakeInstruction(parser.OpReturn, 1)),
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 2),
-				tengo.MakeInstruction(parser.OpReturn, 1)),
+				slim.MakeInstruction(parser.OpConstant, 2),
+				slim.MakeInstruction(parser.OpReturn, 1)),
 			compiledFunction(1, 0,
-				tengo.MakeInstruction(parser.OpConstant, 1),
-				tengo.MakeInstruction(parser.OpReturn, 1))))
+				slim.MakeInstruction(parser.OpConstant, 1),
+				slim.MakeInstruction(parser.OpReturn, 1))))
 	require.Equal(t, 7, b.CountObjects())
 }
 
@@ -262,19 +262,19 @@ func fileSet(files ...srcfile) *parser.SourceFileSet {
 
 func bytecodeFileSet(
 	instructions []byte,
-	constants []tengo.Object,
+	constants []slim.Object,
 	fileSet *parser.SourceFileSet,
-) *tengo.Bytecode {
-	return &tengo.Bytecode{
+) *slim.Bytecode {
+	return &slim.Bytecode{
 		FileSet:      fileSet,
-		MainFunction: &tengo.CompiledFunction{Instructions: instructions},
+		MainFunction: &slim.CompiledFunction{Instructions: instructions},
 		Constants:    constants,
 	}
 }
 
 func testBytecodeRemoveDuplicates(
 	t *testing.T,
-	input, expected *tengo.Bytecode,
+	input, expected *slim.Bytecode,
 ) {
 	input.RemoveDuplicates()
 
@@ -283,12 +283,12 @@ func testBytecodeRemoveDuplicates(
 	require.Equal(t, expected.Constants, input.Constants)
 }
 
-func testBytecodeSerialization(t *testing.T, b *tengo.Bytecode) {
+func testBytecodeSerialization(t *testing.T, b *slim.Bytecode) {
 	var buf bytes.Buffer
 	err := b.Encode(&buf)
 	require.NoError(t, err)
 
-	r := &tengo.Bytecode{}
+	r := &slim.Bytecode{}
 	err = r.Decode(bytes.NewReader(buf.Bytes()), nil)
 	require.NoError(t, err)
 

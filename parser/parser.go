@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/d5/tengo/v2/token"
+	"github.com/snple/slim/token"
 )
 
 type bailout struct{}
@@ -89,7 +89,7 @@ func (p ErrorList) Err() error {
 	return p
 }
 
-// Parser parses the Tengo source files. It's based on Go's parser
+// Parser parses the slim source files. It's based on Go's parser
 // implementation.
 type Parser struct {
 	file      *SourceFile

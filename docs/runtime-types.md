@@ -1,4 +1,4 @@
-# Tengo Runtime Types
+# slim Runtime Types
 
 - **Int**: signed 64bit integer
 - **String**: string
@@ -32,9 +32,9 @@
 |Undefined|**X**    |**X**|**X**    |false|**X**|**X**|**X**|**X**|**X**|**X**|   -    |
 
 _* **X**: No conversion; Typed value functions for `Variable` will
-return zero values._  
-_* strconv: converted using Go's conversion functions from `strconv` package._  
-_* IsFalsy(): use [Object.IsFalsy()](#objectisfalsy) function_  
+return zero values._
+_* strconv: converted using Go's conversion functions from `strconv` package._
+_* IsFalsy(): use [Object.IsFalsy()](#objectisfalsy) function_
 _* String(): use `Object.String()` function_
 _* time.Unix(): use `time.Unix(v, 0)` to convert to Time_
 
@@ -66,7 +66,7 @@ should evaluate to `false` (e.g. for condition expression of `if` statement).
   - `bytes(N)`: as a special case this will create a Bytes variable with the
   given size `N` (only if `N` is int)
 - `time(x)`: tries to convert `x` into time; returns `undefined` if failed
-- See [Builtins](https://github.com/d5/tengo/blob/master/docs/builtins.md) for
+- See [Builtins](https://github.com/snple/slim/blob/master/docs/builtins.md) for
 the full list of builtin functions.
 
 ## Type Checking Builtin Functions
@@ -86,5 +86,5 @@ the full list of builtin functions.
 - `is_time(x)`: return `true` if `x` is time; `false` otherwise
 - `is_error(x)`: returns `true` if `x` is error; `false` otherwise
 - `is_undefined(x)`: returns `true` if `x` is undefined; `false` otherwise
-- See [Builtins](https://github.com/d5/tengo/blob/master/docs/builtins.md) for
+- See [Builtins](https://github.com/snple/slim/blob/master/docs/builtins.md) for
   the full list of builtin functions.

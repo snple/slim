@@ -1,4 +1,4 @@
-package tengo
+package slim
 
 import (
 	"errors"

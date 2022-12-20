@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/require"
-	"github.com/d5/tengo/v2/stdlib"
+	"github.com/snple/slim"
+	"github.com/snple/slim/require"
+	"github.com/snple/slim/stdlib"
 )
 
 type ARR = []interface{}
@@ -105,20 +105,20 @@ func (c callres) call(funcName string, args ...interface{}) callres {
 		return c
 	}
 
-	var oargs []tengo.Object
+	var oargs []slim.Object
 	for _, v := range args {
 		oargs = append(oargs, object(v))
 	}
 
 	switch o := c.o.(type) {
-	case *tengo.BuiltinModule:
+	case *slim.BuiltinModule:
 		m, ok := o.Attrs[funcName]
 		if !ok {
 			return callres{t: c.t, e: fmt.Errorf(
 				"function not found: %s", funcName)}
 		}
 
-		f, ok := m.(*tengo.UserFunction)
+		f, ok := m.(*slim.UserFunction)
 		if !ok {
 			return callres{t: c.t, e: fmt.Errorf(
 				"non-callable: %s", funcName)}
@@ -126,16 +126,16 @@ func (c callres) call(funcName string, args ...interface{}) callres {
 
 		res, err := f.Value(oargs...)
 		return callres{t: c.t, o: res, e: err}
-	case *tengo.UserFunction:
+	case *slim.UserFunction:
 		res, err := o.Value(oargs...)
 		return callres{t: c.t, o: res, e: err}
-	case *tengo.ImmutableMap:
+	case *slim.ImmutableMap:
 		m, ok := o.Value[funcName]
 		if !ok {
 			return callres{t: c.t, e: fmt.Errorf("function not found: %s", funcName)}
 		}
 
-		f, ok := m.(*tengo.UserFunction)
+		f, ok := m.(*slim.UserFunction)
 		if !ok {
 			return callres{t: c.t, e: fmt.Errorf("non-callable: %s", funcName)}
 		}
@@ -165,73 +165,73 @@ func module(t *testing.T, moduleName string) callres {
 	return callres{t: t, o: mod}
 }
 
-func object(v interface{}) tengo.Object {
+func object(v interface{}) slim.Object {
 	switch v := v.(type) {
-	case tengo.Object:
+	case slim.Object:
 		return v
 	case string:
-		return &tengo.String{Value: v}
+		return &slim.String{Value: v}
 	case int64:
-		return &tengo.Int{Value: v}
+		return &slim.Int{Value: v}
 	case int: // for convenience
-		return &tengo.Int{Value: int64(v)}
+		return &slim.Int{Value: int64(v)}
 	case bool:
 		if v {
-			return tengo.TrueValue
+			return slim.TrueValue
 		}
-		return tengo.FalseValue
+		return slim.FalseValue
 	case rune:
-		return &tengo.Char{Value: v}
+		return &slim.Char{Value: v}
 	case byte: // for convenience
-		return &tengo.Char{Value: rune(v)}
+		return &slim.Char{Value: rune(v)}
 	case float64:
-		return &tengo.Float{Value: v}
+		return &slim.Float{Value: v}
 	case []byte:
-		return &tengo.Bytes{Value: v}
+		return &slim.Bytes{Value: v}
 	case MAP:
-		objs := make(map[string]tengo.Object)
+		objs := make(map[string]slim.Object)
 		for k, v := range v {
 			objs[k] = object(v)
 		}
 
-		return &tengo.Map{Value: objs}
+		return &slim.Map{Value: objs}
 	case ARR:
-		var objs []tengo.Object
+		var objs []slim.Object
 		for _, e := range v {
 			objs = append(objs, object(e))
 		}
 
-		return &tengo.Array{Value: objs}
+		return &slim.Array{Value: objs}
 	case IMAP:
-		objs := make(map[string]tengo.Object)
+		objs := make(map[string]slim.Object)
 		for k, v := range v {
 			objs[k] = object(v)
 		}
 
-		return &tengo.ImmutableMap{Value: objs}
+		return &slim.ImmutableMap{Value: objs}
 	case IARR:
-		var objs []tengo.Object
+		var objs []slim.Object
 		for _, e := range v {
 			objs = append(objs, object(e))
 		}
 
-		return &tengo.ImmutableArray{Value: objs}
+		return &slim.ImmutableArray{Value: objs}
 	case time.Time:
-		return &tengo.Time{Value: v}
+		return &slim.Time{Value: v}
 	case []int:
-		var objs []tengo.Object
+		var objs []slim.Object
 		for _, e := range v {
-			objs = append(objs, &tengo.Int{Value: int64(e)})
+			objs = append(objs, &slim.Int{Value: int64(e)})
 		}
 
-		return &tengo.Array{Value: objs}
+		return &slim.Array{Value: objs}
 	}
 
 	panic(fmt.Errorf("unknown type: %T", v))
 }
 
 func expect(t *testing.T, input string, expected interface{}) {
-	s := tengo.NewScript([]byte(input))
+	s := slim.NewScript([]byte(input))
 	s.SetImports(stdlib.GetModuleMap(stdlib.AllModuleNames()...))
 	c, err := s.Run()
 	require.NoError(t, err)

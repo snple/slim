@@ -3,47 +3,47 @@ package stdlib
 import (
 	"math/rand"
 
-	"github.com/d5/tengo/v2"
+	"github.com/snple/slim"
 )
 
-var randModule = map[string]tengo.Object{
-	"int": &tengo.UserFunction{
+var randModule = map[string]slim.Object{
+	"int": &slim.UserFunction{
 		Name:  "int",
 		Value: FuncARI64(rand.Int63),
 	},
-	"float": &tengo.UserFunction{
+	"float": &slim.UserFunction{
 		Name:  "float",
 		Value: FuncARF(rand.Float64),
 	},
-	"intn": &tengo.UserFunction{
+	"intn": &slim.UserFunction{
 		Name:  "intn",
 		Value: FuncAI64RI64(rand.Int63n),
 	},
-	"exp_float": &tengo.UserFunction{
+	"exp_float": &slim.UserFunction{
 		Name:  "exp_float",
 		Value: FuncARF(rand.ExpFloat64),
 	},
-	"norm_float": &tengo.UserFunction{
+	"norm_float": &slim.UserFunction{
 		Name:  "norm_float",
 		Value: FuncARF(rand.NormFloat64),
 	},
-	"perm": &tengo.UserFunction{
+	"perm": &slim.UserFunction{
 		Name:  "perm",
 		Value: FuncAIRIs(rand.Perm),
 	},
-	"seed": &tengo.UserFunction{
+	"seed": &slim.UserFunction{
 		Name:  "seed",
 		Value: FuncAI64R(rand.Seed),
 	},
-	"read": &tengo.UserFunction{
+	"read": &slim.UserFunction{
 		Name: "read",
-		Value: func(args ...tengo.Object) (ret tengo.Object, err error) {
+		Value: func(args ...slim.Object) (ret slim.Object, err error) {
 			if len(args) != 1 {
-				return nil, tengo.ErrWrongNumArguments
+				return nil, slim.ErrWrongNumArguments
 			}
-			y1, ok := args[0].(*tengo.Bytes)
+			y1, ok := args[0].(*slim.Bytes)
 			if !ok {
-				return nil, tengo.ErrInvalidArgumentType{
+				return nil, slim.ErrInvalidArgumentType{
 					Name:     "first",
 					Expected: "bytes",
 					Found:    args[0].TypeName(),
@@ -54,18 +54,18 @@ var randModule = map[string]tengo.Object{
 				ret = wrapError(err)
 				return
 			}
-			return &tengo.Int{Value: int64(res)}, nil
+			return &slim.Int{Value: int64(res)}, nil
 		},
 	},
-	"rand": &tengo.UserFunction{
+	"rand": &slim.UserFunction{
 		Name: "rand",
-		Value: func(args ...tengo.Object) (tengo.Object, error) {
+		Value: func(args ...slim.Object) (slim.Object, error) {
 			if len(args) != 1 {
-				return nil, tengo.ErrWrongNumArguments
+				return nil, slim.ErrWrongNumArguments
 			}
-			i1, ok := tengo.ToInt64(args[0])
+			i1, ok := slim.ToInt64(args[0])
 			if !ok {
-				return nil, tengo.ErrInvalidArgumentType{
+				return nil, slim.ErrInvalidArgumentType{
 					Name:     "first",
 					Expected: "int(compatible)",
 					Found:    args[0].TypeName(),
@@ -77,49 +77,49 @@ var randModule = map[string]tengo.Object{
 	},
 }
 
-func randRand(r *rand.Rand) *tengo.ImmutableMap {
-	return &tengo.ImmutableMap{
-		Value: map[string]tengo.Object{
-			"int": &tengo.UserFunction{
+func randRand(r *rand.Rand) *slim.ImmutableMap {
+	return &slim.ImmutableMap{
+		Value: map[string]slim.Object{
+			"int": &slim.UserFunction{
 				Name:  "int",
 				Value: FuncARI64(r.Int63),
 			},
-			"float": &tengo.UserFunction{
+			"float": &slim.UserFunction{
 				Name:  "float",
 				Value: FuncARF(r.Float64),
 			},
-			"intn": &tengo.UserFunction{
+			"intn": &slim.UserFunction{
 				Name:  "intn",
 				Value: FuncAI64RI64(r.Int63n),
 			},
-			"exp_float": &tengo.UserFunction{
+			"exp_float": &slim.UserFunction{
 				Name:  "exp_float",
 				Value: FuncARF(r.ExpFloat64),
 			},
-			"norm_float": &tengo.UserFunction{
+			"norm_float": &slim.UserFunction{
 				Name:  "norm_float",
 				Value: FuncARF(r.NormFloat64),
 			},
-			"perm": &tengo.UserFunction{
+			"perm": &slim.UserFunction{
 				Name:  "perm",
 				Value: FuncAIRIs(r.Perm),
 			},
-			"seed": &tengo.UserFunction{
+			"seed": &slim.UserFunction{
 				Name:  "seed",
 				Value: FuncAI64R(r.Seed),
 			},
-			"read": &tengo.UserFunction{
+			"read": &slim.UserFunction{
 				Name: "read",
-				Value: func(args ...tengo.Object) (
-					ret tengo.Object,
+				Value: func(args ...slim.Object) (
+					ret slim.Object,
 					err error,
 				) {
 					if len(args) != 1 {
-						return nil, tengo.ErrWrongNumArguments
+						return nil, slim.ErrWrongNumArguments
 					}
-					y1, ok := args[0].(*tengo.Bytes)
+					y1, ok := args[0].(*slim.Bytes)
 					if !ok {
-						return nil, tengo.ErrInvalidArgumentType{
+						return nil, slim.ErrInvalidArgumentType{
 							Name:     "first",
 							Expected: "bytes",
 							Found:    args[0].TypeName(),
@@ -130,7 +130,7 @@ func randRand(r *rand.Rand) *tengo.ImmutableMap {
 						ret = wrapError(err)
 						return
 					}
-					return &tengo.Int{Value: int64(res)}, nil
+					return &slim.Int{Value: int64(res)}, nil
 				},
 			},
 		},

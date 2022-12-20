@@ -1,11 +1,11 @@
-package tengo_test
+package slim_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/d5/tengo/v2"
-	"github.com/d5/tengo/v2/require"
+	"github.com/snple/slim"
+	"github.com/snple/slim/require"
 )
 
 func TestEval(t *testing.T) {
@@ -15,7 +15,7 @@ func TestEval(t *testing.T) {
 		expected interface{},
 	) {
 		ctx := context.Background()
-		actual, err := tengo.Eval(ctx, expr, params)
+		actual, err := slim.Eval(ctx, expr, params)
 		require.NoError(t, err)
 		require.Equal(t, expected, actual)
 	}
