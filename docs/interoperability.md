@@ -2,12 +2,20 @@
 
 ## Table of Contents
 
-- [Using Scripts](#using-scripts)
-  - [Type Conversion Table](#type-conversion-table)
-  - [User Types](#user-types)
-- [Sandbox Environments](#sandbox-environments)
-- [Concurrency](#concurrency)
-- [Compiler and VM](#compiler-and-vm)
+- [Interoperability](#interoperability)
+  - [Table of Contents](#table-of-contents)
+  - [Using Scripts](#using-scripts)
+    - [Type Conversion Table](#type-conversion-table)
+    - [User Types](#user-types)
+  - [Sandbox Environments](#sandbox-environments)
+    - [Script.SetImports(modules \*objects.ModuleMap)](#scriptsetimportsmodules-objectsmodulemap)
+    - [Script.SetMaxAllocs(n int64)](#scriptsetmaxallocsn-int64)
+    - [Script.EnableFileImport(enable bool)](#scriptenablefileimportenable-bool)
+    - [slim.MaxStringLen](#slimmaxstringlen)
+    - [slim.MaxBytesLen](#slimmaxbyteslen)
+  - [Concurrency](#concurrency)
+    - [Compiled.Clone()](#compiledclone)
+  - [Compiler and VM](#compiler-and-vm)
 
 ## Using Scripts
 
@@ -180,7 +188,7 @@ func (dm *DynamicModules) Get(name string) slim.Importable {
   if mod := dm.mods.Get(name); mod != nil {
     return mod
   }
-  return dm.fallback()
+  return dm.fallback(name)
 }
 // ...
 mods := &DynamicModules{

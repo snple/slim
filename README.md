@@ -105,7 +105,4 @@ fmt.Println(res) // "success"
 - [Interoperability](https://github.com/snple/slim/blob/master/docs/interoperability.md)
 - [slim CLI](https://github.com/snple/slim/blob/master/docs/slim-cli.md)
 - [Standard Library](https://github.com/snple/slim/blob/master/docs/stdlib.md)
-- Syntax Highlighters: [VSCode](https://github.com/lissein/vscode-slim), [Atom](https://github.com/snple/slim-atom), [Vim](https://github.com/geseq/slim-vim)
-- **Why the name slim?** It's from [1Q84](https://en.wikipedia.org/wiki/1Q84).
-
-
+- 

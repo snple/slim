@@ -3,8 +3,6 @@
 slim's syntax is designed to be familiar to Go developers while being a bit
 simpler and more streamlined.
 
-**You can test the slim code in online [Playground](https://slimlang.com).**
-
 ## Values and Value Types
 
 In slim, everything is a value, and, all values are associated with a type.
