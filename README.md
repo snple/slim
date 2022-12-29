@@ -1,6 +1,6 @@
 # The Slim Language
 
-Slim is a small, dynamic embedded script language for Go. It comes from [slim](https://github.com/snple/slim).
+Slim is a small, dynamic embedded script language for Go. It comes from [tengo](https://github.com/d5/tengo).
 
 ```golang
 /* The Slim Language */
@@ -105,4 +105,3 @@ fmt.Println(res) // "success"
 - [Interoperability](https://github.com/snple/slim/blob/master/docs/interoperability.md)
 - [slim CLI](https://github.com/snple/slim/blob/master/docs/slim-cli.md)
 - [Standard Library](https://github.com/snple/slim/blob/master/docs/stdlib.md)
-- 
