@@ -180,6 +180,10 @@ var timesModule = map[string]slim.Object{
 		Name:  "to_utc",
 		Value: timesToUTC,
 	}, // to_utc(time) => time
+	"in_location": &slim.UserFunction{
+		Name:  "in_location",
+		Value: timesInLocation,
+	}, // in_location(time, location) => time
 }
 
 func timesSleep(args ...slim.Object) (ret slim.Object, err error) {
@@ -430,7 +434,7 @@ func timesDate(args ...slim.Object) (
 	ret slim.Object,
 	err error,
 ) {
-	if len(args) != 7 {
+	if len(args) < 7 || len(args) > 8 {
 		err = slim.ErrWrongNumArguments
 		return
 	}
@@ -499,9 +503,29 @@ func timesDate(args ...slim.Object) (
 		return
 	}
 
+	var loc *time.Location
+	if len(args) == 8 {
+		i8, ok := slim.ToString(args[7])
+		if !ok {
+			err = slim.ErrInvalidArgumentType{
+				Name:     "eighth",
+				Expected: "string(compatible)",
+				Found:    args[7].TypeName(),
+			}
+			return
+		}
+		loc, err = time.LoadLocation(i8)
+		if err != nil {
+			ret = wrapError(err)
+			return
+		}
+	} else {
+		loc = time.Now().Location()
+	}
+
 	ret = &slim.Time{
 		Value: time.Date(i1,
-			time.Month(i2), i3, i4, i5, i6, i7, time.Now().Location()),
+			time.Month(i2), i3, i4, i5, i6, i7, loc),
 	}
 
 	return
@@ -1130,6 +1154,46 @@ func timesTimeString(args ...slim.Object) (ret slim.Object, err error) {
 	}
 
 	ret = &slim.String{Value: t1.String()}
+
+	return
+}
+
+func timesInLocation(args ...slim.Object) (
+	ret slim.Object,
+	err error,
+) {
+	if len(args) != 2 {
+		err = slim.ErrWrongNumArguments
+		return
+	}
+
+	t1, ok := slim.ToTime(args[0])
+	if !ok {
+		err = slim.ErrInvalidArgumentType{
+			Name:     "first",
+			Expected: "time(compatible)",
+			Found:    args[0].TypeName(),
+		}
+		return
+	}
+
+	s2, ok := slim.ToString(args[1])
+	if !ok {
+		err = slim.ErrInvalidArgumentType{
+			Name:     "second",
+			Expected: "string(compatible)",
+			Found:    args[1].TypeName(),
+		}
+		return
+	}
+
+	location, err := time.LoadLocation(s2)
+	if err != nil {
+		ret = wrapError(err)
+		return
+	}
+
+	ret = &slim.Time{Value: t1.In(location)}
 
 	return
 }
