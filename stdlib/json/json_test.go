@@ -58,6 +58,7 @@ func TestJSON(t *testing.T) {
 	testJSONEncodeDecode(t, MAP{"a": 0, "b": "bee",
 		"arr": ARR{1, 2, 3, MAP{"a": false, "b": 109.4}}})
 	testJSONEncodeDecode(t, MAP{"id1": 7075984636689534001, "id2": 7075984636689534002})
+	testJSONEncodeDecode(t, ARR{1e3, 1e7})
 }
 
 func TestDecode(t *testing.T) {
