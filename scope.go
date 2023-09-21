@@ -7,30 +7,30 @@ import (
 	"github.com/snple/slim/parser"
 )
 
-type Variables map[string]*Variable
+type Vars map[string]*Variable
 
-func NewVariables() Variables {
+func NewVars() Vars {
 	return make(map[string]*Variable)
 }
 
-func (vs Variables) Clear() {
+func (vs Vars) Clear() {
 	vs = make(map[string]*Variable)
 }
 
-func (vs Variables) Len() int {
+func (vs Vars) Len() int {
 	return len(vs)
 }
 
-func (vs Variables) IsEmpty() bool {
+func (vs Vars) IsEmpty() bool {
 	return vs.Len() == 0
 }
 
-func (vs Variables) Contains(name string) bool {
+func (vs Vars) Contains(name string) bool {
 	_, has := vs[name]
 	return has
 }
 
-func (vs Variables) SetAny(name string, value any) error {
+func (vs Vars) SetAny(name string, value any) error {
 	obj, err := FromInterface(value)
 	if err != nil {
 		return err
@@ -44,11 +44,11 @@ func (vs Variables) SetAny(name string, value any) error {
 	return nil
 }
 
-func (vs Variables) SetValue(name string, value *Variable) {
+func (vs Vars) SetValue(name string, value *Variable) {
 	vs[name] = value
 }
 
-func (vs Variables) GetValue(name string) *Variable {
+func (vs Vars) GetValue(name string) *Variable {
 	if v, has := vs[name]; has {
 		return v
 	}
@@ -59,7 +59,7 @@ func (vs Variables) GetValue(name string) *Variable {
 	}
 }
 
-func (vs Variables) Remove(name string) bool {
+func (vs Vars) Remove(name string) bool {
 	if _, ok := vs[name]; !ok {
 		return false
 	}
@@ -74,14 +74,17 @@ type Scope struct {
 	globalIndexes   map[string]int
 	maxAllocs       int64
 	maxConstObjects int
+
+	modules ModuleGetter
 }
 
-func NewScope(variables Variables) *Scope {
+func NewScope(modules ModuleGetter, vars Vars) *Scope {
 	s := &Scope{
 		symbolTable:     NewSymbolTable(),
 		globals:         make([]Object, GlobalsSize),
 		maxAllocs:       -1,
 		maxConstObjects: -1,
+		modules:         modules,
 	}
 
 	for idx, fn := range builtinFuncs {
@@ -89,7 +92,7 @@ func NewScope(variables Variables) *Scope {
 	}
 
 	idx := 0
-	for name, value := range variables {
+	for name, value := range vars {
 		symbol := s.symbolTable.Define(name)
 		if symbol.Index != idx {
 			panic(fmt.Errorf("wrong symbol index: %d != %d",
@@ -104,7 +107,7 @@ func NewScope(variables Variables) *Scope {
 	return s
 }
 
-func (s *Scope) Complie(name string, src []byte, modules ModuleGetter) (*Bytecode, error) {
+func (s *Scope) Complie(name string, src []byte) (*Bytecode, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -124,13 +127,13 @@ func (s *Scope) Complie(name string, src []byte, modules ModuleGetter) (*Bytecod
 	}
 
 	// compile
-	c := NewCompiler(srcFile, s.symbolTable, nil, modules, nil)
+	c := NewCompiler(srcFile, s.symbolTable, nil, s.modules, nil)
 	if err := c.Compile(file); err != nil {
 		return nil, err
 	}
 
 	// reduce globals size
-	// s.globals = s.globals[:s.symbolTable.MaxSymbols()+1]
+	s.globals = s.globals[:s.symbolTable.MaxSymbols()+1]
 
 	s.globalIndexes = make(map[string]int, len(s.globals))
 	for _, name := range s.symbolTable.Names() {
@@ -168,8 +171,8 @@ func (s *Scope) Run(bytecode *Bytecode) error {
 	return nil
 }
 
-func (s *Scope) ComplieAndRun(name string, src []byte, modules ModuleGetter) error {
-	bytecode, err := s.Complie(name, src, modules)
+func (s *Scope) ComplieAndRun(name string, src []byte) error {
+	bytecode, err := s.Complie(name, src)
 	if err != nil {
 		return err
 	}
@@ -225,7 +228,7 @@ func (s *Scope) Set(name string, value interface{}) error {
 	return nil
 }
 
-func (s *Scope) GetAll() Variables {
+func (s *Scope) GetAll() Vars {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
@@ -255,6 +258,8 @@ OUT:
 			// 	}
 			// }
 		case "user-function", "compiled-function":
+			continue OUT
+		case "undefined":
 			continue OUT
 		}
 

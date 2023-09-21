@@ -18,7 +18,7 @@ rand := import("rand")
   int64 from the default Source.
 - `intn(n int) => int`: returns, as an int64, a non-negative pseudo-random
   number in [0,n) from the default Source. It panics if n <= 0.
-- `norm_float) => float`: returns a normally distributed float64 in the range
+- `norm_float() => float`: returns a normally distributed float64 in the range
   [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution
   (mean = 0, stddev = 1) from the default Source.
 - `perm(n int) => [int]`: returns, as a slice of n ints, a pseudo-random
