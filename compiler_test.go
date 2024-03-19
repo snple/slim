@@ -204,11 +204,11 @@ func TestCompiler_Compile(t *testing.T) {
 	expectCompile(t, `if true { 10 }; 3333`,
 		bytecode(
 			concatInsts(
-				slim.MakeInstruction(parser.OpTrue),         // 0000
-				slim.MakeInstruction(parser.OpJumpFalsy, 8), // 0001
-				slim.MakeInstruction(parser.OpConstant, 0),  // 0004
-				slim.MakeInstruction(parser.OpPop),          // 0007
-				slim.MakeInstruction(parser.OpConstant, 1),  // 0008
+				slim.MakeInstruction(parser.OpTrue),          // 0000
+				slim.MakeInstruction(parser.OpJumpFalsy, 10), // 0001
+				slim.MakeInstruction(parser.OpConstant, 0),   // 0004
+				slim.MakeInstruction(parser.OpPop),           // 0007
+				slim.MakeInstruction(parser.OpConstant, 1),   // 0008
 				slim.MakeInstruction(parser.OpPop),
 				slim.MakeInstruction(parser.OpSuspend)), // 0011
 			objectsArray(
@@ -219,10 +219,10 @@ func TestCompiler_Compile(t *testing.T) {
 		bytecode(
 			concatInsts(
 				slim.MakeInstruction(parser.OpTrue),          // 0000
-				slim.MakeInstruction(parser.OpJumpFalsy, 11), // 0001
+				slim.MakeInstruction(parser.OpJumpFalsy, 15), // 0001
 				slim.MakeInstruction(parser.OpConstant, 0),   // 0004
 				slim.MakeInstruction(parser.OpPop),           // 0007
-				slim.MakeInstruction(parser.OpJump, 15),      // 0008
+				slim.MakeInstruction(parser.OpJump, 19),      // 0008
 				slim.MakeInstruction(parser.OpConstant, 1),   // 0011
 				slim.MakeInstruction(parser.OpPop),           // 0014
 				slim.MakeInstruction(parser.OpConstant, 2),   // 0015
@@ -577,12 +577,12 @@ func TestCompiler_Compile(t *testing.T) {
 				intObject(1),
 				intObject(2),
 				compiledFunction(0, 0,
-					slim.MakeInstruction(parser.OpTrue),         // 0000
-					slim.MakeInstruction(parser.OpJumpFalsy, 9), // 0001
-					slim.MakeInstruction(parser.OpConstant, 0),  // 0004
-					slim.MakeInstruction(parser.OpReturn, 1),    // 0007
-					slim.MakeInstruction(parser.OpConstant, 1),  // 0009
-					slim.MakeInstruction(parser.OpReturn, 1))))) // 0012
+					slim.MakeInstruction(parser.OpTrue),          // 0000
+					slim.MakeInstruction(parser.OpJumpFalsy, 11), // 0001
+					slim.MakeInstruction(parser.OpConstant, 0),   // 0004
+					slim.MakeInstruction(parser.OpReturn, 1),     // 0007
+					slim.MakeInstruction(parser.OpConstant, 1),   // 0009
+					slim.MakeInstruction(parser.OpReturn, 1)))))  // 0012
 
 	expectCompile(t, `func() { 1; if(true) { 2 } else { 3 }; 4 }`,
 		bytecode(
@@ -599,10 +599,10 @@ func TestCompiler_Compile(t *testing.T) {
 					slim.MakeInstruction(parser.OpConstant, 0),   // 0000
 					slim.MakeInstruction(parser.OpPop),           // 0003
 					slim.MakeInstruction(parser.OpTrue),          // 0004
-					slim.MakeInstruction(parser.OpJumpFalsy, 15), // 0005
+					slim.MakeInstruction(parser.OpJumpFalsy, 19), // 0005
 					slim.MakeInstruction(parser.OpConstant, 1),   // 0008
 					slim.MakeInstruction(parser.OpPop),           // 0011
-					slim.MakeInstruction(parser.OpJump, 19),      // 0012
+					slim.MakeInstruction(parser.OpJump, 23),      // 0012
 					slim.MakeInstruction(parser.OpConstant, 2),   // 0015
 					slim.MakeInstruction(parser.OpPop),           // 0018
 					slim.MakeInstruction(parser.OpConstant, 3),   // 0019
@@ -932,7 +932,7 @@ func() {
 				slim.MakeInstruction(parser.OpGetGlobal, 0),
 				slim.MakeInstruction(parser.OpConstant, 1),
 				slim.MakeInstruction(parser.OpBinaryOp, 38),
-				slim.MakeInstruction(parser.OpJumpFalsy, 31),
+				slim.MakeInstruction(parser.OpJumpFalsy, 35),
 				slim.MakeInstruction(parser.OpGetGlobal, 0),
 				slim.MakeInstruction(parser.OpConstant, 2),
 				slim.MakeInstruction(parser.OpBinaryOp, 11),
@@ -954,7 +954,7 @@ func() {
 				slim.MakeInstruction(parser.OpSetGlobal, 1),
 				slim.MakeInstruction(parser.OpGetGlobal, 1),
 				slim.MakeInstruction(parser.OpIteratorNext),
-				slim.MakeInstruction(parser.OpJumpFalsy, 37),
+				slim.MakeInstruction(parser.OpJumpFalsy, 41),
 				slim.MakeInstruction(parser.OpGetGlobal, 1),
 				slim.MakeInstruction(parser.OpIteratorKey),
 				slim.MakeInstruction(parser.OpSetGlobal, 2),
@@ -973,11 +973,11 @@ func() {
 				slim.MakeInstruction(parser.OpGetGlobal, 0),
 				slim.MakeInstruction(parser.OpConstant, 0),
 				slim.MakeInstruction(parser.OpEqual),
-				slim.MakeInstruction(parser.OpAndJump, 23),
+				slim.MakeInstruction(parser.OpAndJump, 25),
 				slim.MakeInstruction(parser.OpGetGlobal, 0),
 				slim.MakeInstruction(parser.OpConstant, 1),
 				slim.MakeInstruction(parser.OpNotEqual),
-				slim.MakeInstruction(parser.OpOrJump, 34),
+				slim.MakeInstruction(parser.OpOrJump, 38),
 				slim.MakeInstruction(parser.OpGetGlobal, 0),
 				slim.MakeInstruction(parser.OpConstant, 1),
 				slim.MakeInstruction(parser.OpBinaryOp, 38),
@@ -1089,7 +1089,7 @@ func() {
 			intObject(4),
 			compiledFunction(0, 0,
 				slim.MakeInstruction(parser.OpTrue),
-				slim.MakeInstruction(parser.OpJumpFalsy, 9),
+				slim.MakeInstruction(parser.OpJumpFalsy, 11),
 				slim.MakeInstruction(parser.OpConstant, 0),
 				slim.MakeInstruction(parser.OpReturn, 1),
 				slim.MakeInstruction(parser.OpConstant, 1),
@@ -1123,7 +1123,7 @@ func() {
 				slim.MakeInstruction(parser.OpGetLocal, 0),
 				slim.MakeInstruction(parser.OpConstant, 1),
 				slim.MakeInstruction(parser.OpEqual),
-				slim.MakeInstruction(parser.OpJumpFalsy, 19),
+				slim.MakeInstruction(parser.OpJumpFalsy, 21),
 				slim.MakeInstruction(parser.OpConstant, 2),
 				slim.MakeInstruction(parser.OpReturn, 1),
 				slim.MakeInstruction(parser.OpConstant, 1),
@@ -1156,7 +1156,7 @@ func() {
 			intObject(4),
 			compiledFunction(0, 0,
 				slim.MakeInstruction(parser.OpTrue),
-				slim.MakeInstruction(parser.OpJumpFalsy, 9),
+				slim.MakeInstruction(parser.OpJumpFalsy, 11),
 				slim.MakeInstruction(parser.OpConstant, 0),
 				slim.MakeInstruction(parser.OpReturn, 1),
 				slim.MakeInstruction(parser.OpConstant, 1),
@@ -1180,7 +1180,7 @@ func() {
 			intObject(123),
 			compiledFunction(0, 0,
 				slim.MakeInstruction(parser.OpTrue),
-				slim.MakeInstruction(parser.OpJumpFalsy, 6),
+				slim.MakeInstruction(parser.OpJumpFalsy, 8),
 				slim.MakeInstruction(parser.OpReturn, 0),
 				slim.MakeInstruction(parser.OpReturn, 0),
 				slim.MakeInstruction(parser.OpConstant, 0),
@@ -1200,12 +1200,12 @@ if a := 1; a {
 			slim.MakeInstruction(parser.OpConstant, 0),
 			slim.MakeInstruction(parser.OpSetGlobal, 0),
 			slim.MakeInstruction(parser.OpGetGlobal, 0),
-			slim.MakeInstruction(parser.OpJumpFalsy, 27),
+			slim.MakeInstruction(parser.OpJumpFalsy, 31),
 			slim.MakeInstruction(parser.OpConstant, 1),
 			slim.MakeInstruction(parser.OpSetGlobal, 0),
 			slim.MakeInstruction(parser.OpGetGlobal, 0),
 			slim.MakeInstruction(parser.OpSetGlobal, 1),
-			slim.MakeInstruction(parser.OpJump, 39),
+			slim.MakeInstruction(parser.OpJump, 43),
 			slim.MakeInstruction(parser.OpConstant, 2),
 			slim.MakeInstruction(parser.OpSetGlobal, 0),
 			slim.MakeInstruction(parser.OpGetGlobal, 0),
@@ -1238,12 +1238,12 @@ func() {
 				slim.MakeInstruction(parser.OpConstant, 0),
 				slim.MakeInstruction(parser.OpDefineLocal, 0),
 				slim.MakeInstruction(parser.OpGetLocal, 0),
-				slim.MakeInstruction(parser.OpJumpFalsy, 22),
+				slim.MakeInstruction(parser.OpJumpFalsy, 26),
 				slim.MakeInstruction(parser.OpConstant, 1),
 				slim.MakeInstruction(parser.OpSetLocal, 0),
 				slim.MakeInstruction(parser.OpGetLocal, 0),
 				slim.MakeInstruction(parser.OpDefineLocal, 1),
-				slim.MakeInstruction(parser.OpJump, 31),
+				slim.MakeInstruction(parser.OpJump, 35),
 				slim.MakeInstruction(parser.OpConstant, 2),
 				slim.MakeInstruction(parser.OpSetLocal, 0),
 				slim.MakeInstruction(parser.OpGetLocal, 0),

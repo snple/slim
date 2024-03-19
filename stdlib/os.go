@@ -6,11 +6,14 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/snple/slim"
 )
 
 var osModule = map[string]slim.Object{
+	"platform":            &slim.String{Value: runtime.GOOS},
+	"arch":                &slim.String{Value: runtime.GOARCH},
 	"o_rdonly":            &slim.Int{Value: int64(os.O_RDONLY)},
 	"o_wronly":            &slim.Int{Value: int64(os.O_WRONLY)},
 	"o_rdwr":              &slim.Int{Value: int64(os.O_RDWR)},
